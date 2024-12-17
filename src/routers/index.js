@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import AuthPage from "../views/AuthPage.vue";
 import RegisterPage from "../views/RegisterPage.vue";
 import HomePage from "../views/HomePage.vue";
+import ManageProjects from "../views/ManageProjects.vue";
+
 
 
 const routes = [
@@ -20,6 +22,12 @@ const routes = [
     name: "HomePage",
     component: HomePage,
   },
+  {
+    path: "/ManageProjects",
+    name: "ManageProjects",
+    component: ManageProjects,
+  },
+
 ];
 
 

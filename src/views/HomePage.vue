@@ -11,7 +11,7 @@
     <!-- Afficher pour Manager uniquement -->
     <div v-if="roles.includes('Manager') && !roles.includes('Developer')">
       <h2>Gestion des projets pour Manager</h2>
-      <h6>lo</h6>
+      <router-link to="/ManageProjects">Accéder à la gestion des projets</router-link>
     </div>
 
     <!-- Afficher pour ceux qui ont les deux rôles -->
