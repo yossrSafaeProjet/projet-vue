@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from "vue-router";
 import AuthPage from "../views/AuthPage.vue";
 import RegisterPage from "../views/RegisterPage.vue";
 import HomePage from "../views/HomePage.vue";
+import ProjetDeveloperView from "@/views/ProjetDeveloperView.vue";
+import CreateTacheModalView from "@/views/CreateTacheModalView.vue";
 
 
 const routes = [
@@ -19,6 +21,16 @@ const routes = [
     path: "/dashboard",
     name: "HomePage",
     component: HomePage,
+  },
+  {
+    path: "/projetDeveloper",
+    name: "projetDeveloper",
+    component: ProjetDeveloperView,
+  },
+  {
+    path: "/createTache",
+    name: "createTache",
+    component: CreateTacheModalView,
   },
 ];
 
