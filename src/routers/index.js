@@ -3,7 +3,7 @@ import AuthPage from "../views/AuthPage.vue";
 import RegisterPage from "../views/RegisterPage.vue";
 import HomePage from "../views/HomePage.vue";
 import ManageProjects from "../views/ManageProjects.vue";
-
+import CreateTacheModalView from "../views/CreateTacheModalView.vue";
 
 
 const routes = [
@@ -27,7 +27,11 @@ const routes = [
     name: "ManageProjects",
     component: ManageProjects,
   },
-
+  {
+    path: "/createTache",
+    name: "createTache",
+    component: CreateTacheModalView,
+  },
 ];
 
 
