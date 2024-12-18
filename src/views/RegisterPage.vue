@@ -2,6 +2,26 @@
   <div class="register-container">
     <h1>Inscription</h1>
     <form @submit.prevent="handleRegister">
+      <!-- Nouveau champ Nom -->
+      <label for="first-name">Prénom</label>
+      <input
+        type="text"
+        id="first-name"
+        v-model="firstName"
+        placeholder="Entrez votre prénom"
+        required
+      />
+
+      <!-- Nouveau champ Prénom -->
+      <label for="last-name">Nom</label>
+      <input
+        type="text"
+        id="last-name"
+        v-model="lastName"
+        placeholder="Entrez votre nom"
+        required
+      />
+
       <label for="email">Adresse email</label>
       <input
         type="email"
@@ -56,11 +76,12 @@
     </p>
   </div>
 </template>
-
 <script>
 export default {
   data() {
     return {
+      firstName: "",  // Nouveau champ prénom
+      lastName: "",   // Nouveau champ nom
       email: "",
       password: "",
       confirmPassword: "", 
@@ -79,13 +100,23 @@ export default {
       } else if (this.password !== this.confirmPassword) {
         alert("Les mots de passe ne correspondent pas !");
       } else {
-        // Ajoute le nouvel utilisateur avec son email, son mot de passe et ses rôles
+        // Génère un ID unique pour l'utilisateur (par exemple en utilisant un timestamp)
+        const newUserId =crypto.randomUUID() ;
+        console.log(newUserId);
+        // Ajoute le nouvel utilisateur avec son id, nom, prénom, email, mot de passe et rôles
         users.push({
+          id: newUserId,          // ID unique basé sur le timestamp
+          firstName: this.firstName,
+          lastName: this.lastName,
           email: this.email,
           password: this.password,
           roles: this.roles,
         });
+
+        // Enregistre les utilisateurs dans le localStorage
         localStorage.setItem("users", JSON.stringify(users));
+        localStorage.setItem("lastUserId", newUserId);  // Sauvegarde du dernier ID utilisateur utilisé
+
         alert("Inscription réussie !");
         // Redirige vers la page de connexion
         this.$router.push("/");
@@ -97,65 +128,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.register-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.register-container h1 {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.register-container form {
-  display: flex;
-  flex-direction: column;
-}
-
-.register-container label {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.register-container input[type="text"],
-.register-container input[type="email"],
-.register-container input[type="password"] {
-  margin-bottom: 15px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.register-container input[type="checkbox"] {
-  margin-right: 10px;
-}
-
-.register-container button {
-  background-color: #28a745;
-  color: #fff;
-  padding: 10px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.register-container button:hover {
-  background-color: #218838;
-}
-
-#roles {
-  margin-bottom: 15px;
-}
-
-#roles label {
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
-}
-</style>

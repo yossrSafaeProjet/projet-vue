@@ -49,12 +49,21 @@ export default {
       );
 
       if (user) {
-        
-        
         alert("Connexion réussie !");
+        console.log(user);  // Vérifie la structure de l'objet 'user'
         localStorage.setItem("authenticatedUser", JSON.stringify(user));
         localStorage.setItem("userRoles", JSON.stringify(user.roles));
-        this.$router.push("/dashboard");  
+
+         // Si l'utilisateur est un manager, on stocke son ID
+            if (user.roles && user.roles.includes('Manager')) {
+            console.log('ID du manager:', user.id);  // Vérifie que l'ID est récupéré correctement
+            if (user.id) {
+                localStorage.setItem("managerId", user.id);  // Stocke l'ID du manager
+            } else {
+                console.error('ID du manager non trouvé');
+            }
+            }
+            this.$router.push("/dashboard");
       } else {
         alert("Nom d'utilisateur ou mot de passe incorrect !");
       }

@@ -1,87 +1,120 @@
 <template>
-    <!-- Popup Bootstrap -->
-    <div class="modal fade" id="createTacheModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Créer une tâche</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <!-- Formulaire -->
-            <form  @submit.prevent="creerTache">
-              <div class="form-group row mb-3">
-                <label for="titreTache" class="col-sm-4 col-form-label">Titre de la tâche</label>
-                <div class="col-sm-8">
-                  <input type="text" class="form-control" id="titreTache" name="titreTache">
+  <!-- Popup Bootstrap -->
+  <div class="modal fade show" style="display: block;" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Créer une tâche</h5>
+          <button type="button" class="btn-close" @click="$emit('close-modal')" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Formulaire -->
+          <form @submit.prevent="creerTache">
+            <div class="form-group row mb-3">
+              <label for="titreTache" class="col-sm-4 col-form-label">Titre de la tâche</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="titreTache" v-model="titreTache" required />
+              </div>
+            </div>
+            <div class="form-group row mb-3">
+              <label for="description" class="col-sm-4 col-form-label">Description</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="description" v-model="description" required />
+              </div>
+            </div>
+
+            <!-- Afficher le sélecteur de développeur si c'est un manager -->
+            <div v-if="isManager" class="form-group row mb-3">
+              <label for="developer" class="col-sm-4 col-form-label">Assigner à un développeur</label>
+              <div class="col-sm-8">
+                <select class="form-control" v-model="developerId" required>
+                  <option v-for="developer in developers" :key="developer.id" :value="developer.id">
+                    {{ developer.firstName }} {{ developer.lastName }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <fieldset class="form-group row mb-3">
+              <legend class="col-form-label col-sm-4 pt-0">Statut</legend>
+              <div class="col-sm-8">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="valid" value="Validée" v-model="statut" :disabled="isManager" />
+                  <label class="form-check-label" for="valid">Validée</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="non-valid" value="Non-validée" v-model="statut" :disabled="!isManager" />
+                  <label class="form-check-label" for="non-valid">Non validée</label>
                 </div>
               </div>
-              <div class="form-group row mb-3">
-                <label for="description" class="col-sm-4 col-form-label">Description</label>
-                <div class="col-sm-8">
-                  <input type="text" class="form-control" id="description" name="description">
-                </div>
+            </fieldset>
+
+            <div class="form-group row">
+              <div class="col-sm-12 text-end">
+                <button type="submit" class="btn btn-primary">Créer une tâche</button>
               </div>
-              <fieldset class="form-group row mb-3">
-                <legend class="col-form-label col-sm-4 pt-0">Statut</legend>
-                <div class="col-sm-8">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="validée">
-                    <label class="form-check-label" for="gridRadios1">Validée</label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="non-validée">
-                    <label class="form-check-label" for="gridRadios2">Non validée</label>
-                  </div>
-                </div>
-              </fieldset>
-              <div class="form-group row">
-                <div class="col-sm-12 text-end">
-                  <button type="submit" class="btn btn-primary">Créer une tâche</button>
-                </div>
-              </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+
+// Récupérer les utilisateurs depuis le localStorage
+const users = JSON.parse(localStorage.getItem('users')) || [];
+const developers = users.filter(user => user.roles && user.roles.includes('Developer'));
+
+const props = defineProps({
+  project: {
+    type: Object, 
+    required: true,
+  },
+});
+
+
+// Émettre les événements
+const emit = defineEmits(['task-created', 'close-modal']);
+
+// Données liées à la tâche
+const titreTache = ref('');
+const description = ref('');
+const statut = ref('');
+const developerId = ref(null);
+
+// Vérification du rôle de l'utilisateur pour savoir s'il est manager
+const roles = JSON.parse(localStorage.getItem('userRoles')) || []; // Récupère les rôles depuis le localStorage
+const isManager = computed(() => roles.includes('Manager'));
+
+// Définir le statut automatiquement selon le rôle
+onMounted(() => {
+  if (isManager.value) {
+    statut.value = 'Validée'; // Pour les managers, le statut est validé par défaut
+  } else {
+    statut.value = 'Non-validée'; // Pour les développeurs, le statut est non validé par défaut
+  }
+});
+
+// Lors de la création de la tâche
+function creerTache() {
+  if (!titreTache.value || !description.value || !statut.value) {
+    alert('Veuillez remplir tous les champs.');
+    return;
+  }
   
-  <script setup>
- import { ref } from 'vue';
- const taches = ref([]);
-
-// Charger les tâches depuis le localStorage au démarrage
-if (localStorage.getItem('taches')) {
-  taches.value = JSON.parse(localStorage.getItem('taches'));
-}
-
-function creerTache(event) {
-  event.preventDefault();
-console.log(event.target.titreTache.value)
-  // Créer une nouvelle tâche
-  const nouveauTache = {
+  const nouvelleTache = {
     id: crypto.randomUUID(),
-    titre: event.target.titreTache.value,
-    description: event.target.description.value,
-    statut: event.target.gridRadios.value,
+    titre: titreTache.value,
+    description: description.value,
+    statut: statut.value,
+    developerId: developerId.value || null, 
+    projectId: props.project.id,
   };
 
-  // Ajouter la nouvelle tâche à la liste
- 
-  taches.value.push(nouveauTache);
-  // Sauvegarder la liste des tâches dans le localStorage
-  localStorage.setItem('taches', JSON.stringify(taches.value));
-  alert('Tâche bien ajoutée');
- 
-  // Vider le formulaire
-  event.target.reset();
-  window.location.href = '/projetDeveloper'; 
+  emit('task-created', nouvelleTache);
+  emit('close-modal');
 }
-
-  </script>
-  
-  <style>
-
-  </style>
-  
+</script>

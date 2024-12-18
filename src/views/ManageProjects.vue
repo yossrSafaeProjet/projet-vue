@@ -3,69 +3,152 @@
     <h1>Gestion des Projets</h1>
     <button @click="showProjectForm = true">Créer un nouveau projet</button>
     
-    <!-- Formulaire de création de projet -->
+    <!-- Formulaire de création / modification de projet -->
     <div v-if="showProjectForm">
-      <form @submit.prevent="createProject">
+      <form @submit.prevent="saveProject">
         <label for="projectName">Nom du projet</label>
         <input type="text" v-model="newProject.name" required />
         <label for="projectDescription">Description</label>
         <textarea v-model="newProject.description" required></textarea>
         
-        <button type="submit">Créer le projet</button>
+        <button type="submit">
+          {{ editingProjectId ? 'Modifier le projet' : 'Créer le projet' }}
+        </button>
+        <button type="button" @click="cancelEdit">Annuler</button>
       </form>
     </div>
     
-    <!-- Liste des projets -->
-    <div v-for="project in projects" :key="project.id">
+    <!-- Liste des projets attribués au manager -->
+    <div v-for="project in filteredProjects" :key="project.id">
       <h2>{{ project.name }}</h2>
       <p>{{ project.description }}</p>
       <button @click="editProject(project)">Modifier</button>
       <button @click="deleteProject(project.id)">Supprimer</button>
-      <button @click="viewProjectDashboard(project.id)">Voir le tableau de bord</button>
+      <button @click="openCreateTaskModal(project)">Ajouter une tâche</button>
       
-      
+      <!-- Liste des tâches -->
+      <div v-if="project.tasks && project.tasks.length">
+        <ul>
+          <li v-for="task in project.tasks" :key="task.id">{{ task.titre }} - {{ task.statut }}</li>
+        </ul>
+      </div>
     </div>
+    <p>{{selectedProject}}</p>
+    <CreateTacheModalView 
+        v-if="selectedProject" 
+        :project="selectedProject" 
+        @task-created="addTaskToProject" 
+        @close-modal="closeTaskModal"
+    />
+
   </div>
+  <router-link :to="{ name: 'ListeProjects' }">Voir les projets</router-link>
 </template>
 
 <script>
+import CreateTacheModalView from './CreateTacheModalView.vue';
+
 export default {
+  components: {
+    CreateTacheModalView,
+  },
   data() {
     return {
       projects: [],  // Liste des projets
-      newProject: { 
-        name: "", 
-        description: "", 
-      },
-      showProjectForm: false,  // Affichage du formulaire de création de projet
-      developers: [  // Liste fictive des développeurs pour affectation
-        { id: 1, name: "John Doe" },
-        { id: 2, name: "Jane Smith" },
-        { id: 3, name: "Alice Johnson" }
-      ],
+      newProject: { name: "", description: "" },
+      showProjectForm: false,
+      editingProjectId: null, // ID du projet en cours de modification
+      selectedProject: null,
+      managerId: null, // Identifiant du manager
     };
   },
+  mounted() {
+    // Charger les projets depuis localStorage lors du montage du composant
+    this.loadProjects();
+    // Récupérer l'identifiant du manager depuis le localStorage
+    this.recupererManagerId();
+  },
+  computed: {
+    // Filtrer les projets pour n'afficher que ceux attribués au manager
+    filteredProjects() {
+      return this.projects.filter(project => project.managerId === this.managerId);
+    },
+  },
   methods: {
-    // Créer un projet avec ses tâches
-    createProject() {
-      const newProject = { 
-        ...this.newProject, 
-        id: Date.now(), 
-      };
-      this.projects.push(newProject);
-      this.newProject = { name: "", description: "" };
-      this.showProjectForm = false;
+    recupererManagerId() {
+      // Récupérer l'ID du manager depuis localStorage
+      const managerId = localStorage.getItem('managerId');
+      
+      if (managerId) {
+        this.managerId = managerId;  // Assigner l'ID du manager à la variable
+        console.log('ID du manager récupéré:', this.managerId);
+      } else {
+        console.log('Aucun ID de manager trouvé.');
+      }
+    },
+    // Sauvegarder un projet (création ou modification)
+    saveProject() {
+      if (this.editingProjectId) {
+        // Modification existante
+        const project = this.projects.find(p => p.id === this.editingProjectId);
+        if (project) {
+          project.name = this.newProject.name;
+          project.description = this.newProject.description;
+        }
+      } else {
+        // Création d'un nouveau projet
+        const newProject = {
+          ...this.newProject,
+          id: crypto.randomUUID(), 
+          tasks: [],
+          managerId: this.managerId, // Associer le projet au manager
+        };
+        this.projects.push(newProject);
+      }
+
+      // Sauvegarder les projets dans le localStorage
+      this.saveProjects();
+
+      this.resetForm();
     },
 
     // Modifier un projet
     editProject(project) {
-      this.newProject = { ...project };
+      this.newProject = { name: project.name, description: project.description };
+      this.editingProjectId = project.id;
       this.showProjectForm = true;
     },
 
     // Supprimer un projet
     deleteProject(id) {
       this.projects = this.projects.filter((project) => project.id !== id);
+      // Sauvegarder les projets mis à jour dans le localStorage
+      this.saveProjects();
+    },
+
+    // Sauvegarder les projets dans le localStorage
+    saveProjects() {
+      localStorage.setItem('projects', JSON.stringify(this.projects));
+    },
+
+    // Charger les projets depuis le localStorage
+    loadProjects() {
+      const storedProjects = localStorage.getItem('projects');
+      if (storedProjects) {
+        this.projects = JSON.parse(storedProjects);
+      }
+    },
+
+    // Réinitialiser le formulaire
+    resetForm() {
+      this.newProject = { name: "", description: "" };
+      this.showProjectForm = false;
+      this.editingProjectId = null;
+    },
+
+    // Annuler la modification
+    cancelEdit() {
+      this.resetForm();
     },
 
     // Voir le tableau de bord du projet
@@ -73,6 +156,19 @@ export default {
       this.$router.push({ name: 'project-dashboard', params: { projectId } });
     },
 
+    // Ouvrir la modal pour ajouter une tâche
+    openCreateTaskModal(project) {
+      this.selectedProject = project;
+    },
+
+    // Ajouter une tâche au projet
+    addTaskToProject(task) {
+      const project = this.projects.find(p => p.id === this.selectedProject.id);
+      if (project) project.tasks.push(task);
+      // Sauvegarder les projets avec la nouvelle tâche
+      this.saveProjects();
+      this.selectedProject = null;
+    },
   },
 };
 </script>
