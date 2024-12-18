@@ -70,6 +70,12 @@
   
   <script setup>
   import { ref } from "vue";
+  const props = defineProps({
+  projet: {
+    type: Object,
+    required: true,
+  },
+});
 
   function confirmRole() {
   // Récupération des données mises à jour depuis le localStorage
@@ -101,7 +107,7 @@
     alert(`Vous êtes identifié comme ${selectedRole}`);
     // Redirection en fonction du rôle
     if (selectedRole[0] === "Developer") {
-      window.location.href = `/projetDeveloper/${authenticatedUser.id}`;
+      window.location.href = `/projetDeveloper/${authenticatedUser.id}/${props.projet.id}`;
     } else if (selectedRole[0]=== "Manager") {
       window.location.href = "/ManageProjects";
     }

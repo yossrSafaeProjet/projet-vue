@@ -33,7 +33,7 @@ const routes = [
     component: ManageProjects,
   },
   {
-    path: "/projetDeveloper/:developperId",
+    path: "/projetDeveloper/:developperId/:projetId",
     name: "projetDeveloper",
     component: ProjetDeveloperView,
   },

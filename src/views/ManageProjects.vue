@@ -24,7 +24,10 @@
       <p>{{ project.description }}</p>
       <button @click="editProject(project)">Modifier</button>
       <button @click="deleteProject(project.id)">Supprimer</button>
-      <button @click="openCreateTaskModal(project)">Ajouter une tâche</button>
+      <button
+      data-bs-toggle="modal"
+      data-bs-target="#createTacheModal" 
+      @click="openCreateTaskModal(project)">Ajouter une tâche</button>
       
       <!-- Liste des tâches -->
       <div v-if="project.tasks && project.tasks.length">
@@ -33,12 +36,11 @@
         </ul>
       </div>
     </div>
-    <p>{{selectedProject}}</p>
     <CreateTacheModalView 
-        v-if="selectedProject" 
+        
         :project="selectedProject" 
         @task-created="addTaskToProject" 
-        @close-modal="closeTaskModal"
+       
     />
 
   </div>

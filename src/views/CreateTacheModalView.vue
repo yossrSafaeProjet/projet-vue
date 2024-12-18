@@ -1,12 +1,12 @@
 <template>
   <!-- Popup Bootstrap -->
-  <div class="modal fade show" style="display: block;" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade " id="createTacheModal"  tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Créer une tâche</h5>
-          <button type="button" class="btn-close" @click="$emit('close-modal')" aria-label="Close"></button>
-        </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
         <div class="modal-body">
           <!-- Formulaire -->
           <form @submit.prevent="creerTache">
@@ -29,7 +29,7 @@
               <div class="col-sm-8">
                 <select class="form-control" v-model="developerId" required>
                   <option v-for="developer in developers" :key="developer.id" :value="developer.id">
-                    {{ developer.firstName }} {{ developer.lastName }}
+                    {{ developer.email }}
                   </option>
                 </select>
               </div>
@@ -111,7 +111,6 @@ function creerTache() {
     description: description.value,
     statut: statut.value,
     developerId: developerId.value || null, 
-    projectId: props.project.id,
   };
 
   emit('task-created', nouvelleTache);
