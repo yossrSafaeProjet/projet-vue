@@ -1,15 +1,13 @@
 <template>
-  <!-- Popup Bootstrap -->
   <div class="modal fade show" style="display: block;" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Créer une tâche</h5>
-          <button type="button" class="btn-close" @click="$emit('close-modal')" aria-label="Close"></button>
+          <h5 class="modal-title" id="exampleModalLabel">Éditer une tâche</h5>
+          <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <!-- Formulaire -->
-          <form @submit.prevent="creerTache">
+          <form @submit.prevent="editerTache">
             <div class="form-group row mb-3">
               <label for="titreTache" class="col-sm-4 col-form-label">Titre de la tâche</label>
               <div class="col-sm-8">
@@ -22,19 +20,16 @@
                 <input type="text" class="form-control" id="description" v-model="description" required />
               </div>
             </div>
-
-            <!-- Afficher le sélecteur de développeur si c'est un manager -->
             <div v-if="isManager" class="form-group row mb-3">
               <label for="developer" class="col-sm-4 col-form-label">Assigner à un développeur</label>
               <div class="col-sm-8">
-                <select class="form-control" v-model="developerId" required>
+                <select class="form-control" v-model="developerId">
                   <option v-for="developer in developers" :key="developer.id" :value="developer.id">
                     {{ developer.firstName }} {{ developer.lastName }}
                   </option>
                 </select>
               </div>
             </div>
-
             <fieldset class="form-group row mb-3">
               <legend class="col-form-label col-sm-4 pt-0">Statut</legend>
               <div class="col-sm-8">
@@ -48,10 +43,9 @@
                 </div>
               </div>
             </fieldset>
-
             <div class="form-group row">
               <div class="col-sm-12 text-end">
-                <button type="submit" class="btn btn-primary">Créer une tâche</button>
+                <button type="submit" class="btn btn-primary">Mettre à jour la tâche</button>
               </div>
             </div>
           </form>
@@ -62,60 +56,58 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
 
-// Récupérer les utilisateurs depuis le localStorage
+const props = defineProps({
+  task: {
+    type: Object,
+    required: true,
+    default: () => ({
+      titre: '',
+      description: '',
+      statut: 'Non-validée',
+      developerId: null,
+    }),
+  },
+});
+const emit = defineEmits(['task-updated', 'close-modal']);
+
+// Données liées à la tâche (pré-remplies avec les données existantes)
+const titreTache = ref(props.task.titre);
+const description = ref(props.task.description);
+const statut = ref(props.task.statut);
+const developerId = ref(props.task.developerId || null);
+
+// Récupérer les développeurs depuis le localStorage
 const users = JSON.parse(localStorage.getItem('users')) || [];
 const developers = users.filter(user => user.roles && user.roles.includes('Developer'));
 
-const props = defineProps({
-  project: {
-    type: Object, // ou Array selon la structure de ton projet
-    required: true, // Si tu veux que cette prop soit obligatoire
-  },
-});
-
-
-// Émettre les événements
-const emit = defineEmits(['task-created', 'close-modal']);
-
-// Données liées à la tâche
-const titreTache = ref('');
-const description = ref('');
-const statut = ref('');
-const developerId = ref(null);
-
-// Vérification du rôle de l'utilisateur pour savoir s'il est manager
-const roles = JSON.parse(localStorage.getItem('userRoles')) || []; // Récupère les rôles depuis le localStorage
+// Vérification du rôle de l'utilisateur
+const roles = JSON.parse(localStorage.getItem('userRoles')) || [];
 const isManager = computed(() => roles.includes('Manager'));
 
-// Définir le statut automatiquement selon le rôle
-onMounted(() => {
-  if (isManager.value) {
-    statut.value = 'Validée'; // Pour les managers, le statut est validé par défaut
-  } else {
-    statut.value = 'Non-validée'; // Pour les développeurs, le statut est non validé par défaut
-  }
-});
-
-// Lors de la création de la tâche
-function creerTache() {
+// Fonction pour mettre à jour la tâche
+function editerTache() {
   if (!titreTache.value || !description.value || !statut.value) {
     alert('Veuillez remplir tous les champs.');
     return;
   }
-  
-  const nouvelleTache = {
-    id: crypto.randomUUID(),
+
+  const tacheMiseAJour = {
+    ...props.task,
     titre: titreTache.value,
     description: description.value,
     statut: statut.value,
-    developerId: developerId.value || null, // Si un développeur est assigné, on l'ajoute
-    projectId: props.project.id,
+    developerId: developerId.value,
   };
 
-  console.log('Nouvelle tâche créée:', nouvelleTache); // Vérifiez la tâche créée
-  emit('task-created', nouvelleTache);
+  console.log('Tâche mise à jour:', tacheMiseAJour);
+  emit('task-updated', tacheMiseAJour);
+  emit('close-modal');
+}
+
+// Fonction pour fermer le modal
+function closeModal() {
   emit('close-modal');
 }
 </script>

@@ -23,13 +23,7 @@
       />
 
       <label for="email">Adresse email</label>
-      <input
-        type="email"
-        id="email"
-        v-model="email"
-        placeholder="Entrez votre adresse email"
-        required
-      />
+      <input type="email" id="email" v-model="email" placeholder="Entrez votre adresse email" required/>
 
       <label for="password">Mot de passe</label>
       <input
@@ -80,8 +74,8 @@
 export default {
   data() {
     return {
-      firstName: "",  // Nouveau champ prénom
-      lastName: "",   // Nouveau champ nom
+      firstName: "",  
+      lastName: "",   
       email: "",
       password: "",
       confirmPassword: "", 
@@ -100,21 +94,14 @@ export default {
       } else if (this.password !== this.confirmPassword) {
         alert("Les mots de passe ne correspondent pas !");
       } else {
-<<<<<<< HEAD
         // Génère un ID unique pour l'utilisateur (par exemple en utilisant un timestamp)
         const newUserId =crypto.randomUUID() ;
         console.log(newUserId);
         // Ajoute le nouvel utilisateur avec son id, nom, prénom, email, mot de passe et rôles
         users.push({
-          id: newUserId,          // ID unique basé sur le timestamp
+          id: newUserId,  
           firstName: this.firstName,
           lastName: this.lastName,
-=======
-        const userId = crypto.randomUUID();
-        // Ajoute le nouvel utilisateur avec son email, son mot de passe et ses rôles
-        users.push({
-          id:userId,
->>>>>>> fb3fd01 (deuxieme commit)
           email: this.email,
           password: this.password,
           roles: this.roles,

@@ -7,7 +7,6 @@ import CreateTacheModalView from "../views/CreateTacheModalView.vue";
 import ListeProjects from "../views/ListeProjects.vue";
 
 import ProjetDeveloperView from "@/views/ProjetDeveloperView.vue";
-import CreateTacheModalView from "@/views/CreateTacheModalView.vue";
 import ListeAllTachesView from "@/views/ListeAllTachesView.vue";
 import AjoutCommentaireModalView from "@/views/AjoutCommentaireModalView.vue";
 
