@@ -1,42 +1,27 @@
+<script setup>
+import ProjetDeveloperView from './ProjetDeveloperView.vue'
+import ModalVerifierManagerDeveloperView from './ModalVerifierManagerDeveloperView.vue'
+ import {ref} from 'vue'
+const projets = ref([{ id: 1, nom: "Projet1" }, { id: 2, nom: "Projet2" }]); 
+
+</script>
 <template>
-  <div>
-    <h1>Dashboard</h1>
-
-    <!-- Afficher pour Developer uniquement -->
-    <div v-if="roles.includes('Developer') && !roles.includes('Manager')">
-      <h2>Liste des projets pour Developer</h2>
-      <h6>hhhhhhhhhhhhhhhhh</h6>
-    </div>
-
-    <!-- Afficher pour Manager uniquement -->
-    <div v-if="roles.includes('Manager') && !roles.includes('Developer')">
-      <h2>Gestion des projets pour Manager</h2>
-      <router-link to="/ManageProjects">Accéder à la gestion des projets</router-link>
-    </div>
-
-    <!-- Afficher pour ceux qui ont les deux rôles -->
-    <div v-if="roles.includes('Developer') && roles.includes('Manager')">
-      <h2>Dashboard complet (Developer + Manager)</h2>
-      <!-- Contenu pour Developer et Manager -->
+  <h1>Liste des projets</h1>
+  <div v-for="(projet,i) in projets" :key="projet.id" class="card mb-3" style="width: 18rem;">
+    <div class="card-body">
+      <h5 class="card-title">Projet {{ i + 1 }}</h5>
+      <h6 class="card-subtitle mb-2 text-muted"> {{ projet.nom }}</h6>
+      <div>
+    <!-- Bouton pour ouvrir le modal -->
+    <button
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#roleModal"
+    >
+      Vérifier votre rôle
+    </button>
+    <ModalVerifierManagerDeveloperView/>
+  </div>
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {
-      roles: []  // Liste des rôles récupérés
-    };
-  },
-  created() {
-    // Simuler la récupération des rôles depuis le backend ou le localStorage
-    const storedRoles = JSON.parse(localStorage.getItem("userRoles"));
-    if (storedRoles && Array.isArray(storedRoles)) {
-      this.roles = storedRoles;
-    } else {
-      console.error("Roles not found or invalid format.");
-    }
-  }
-};
-</script>

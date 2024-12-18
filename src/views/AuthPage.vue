@@ -1,30 +1,46 @@
 <template>
-  <div class="login-container">
-    <h1>Connexion</h1>
-    <form @submit.prevent="handleLogin">
-      <label for="email">Adresse email</label>
-      <input
-        type="email"
-        id="email"
-        v-model="email"
-        placeholder="Entrez votre adresse email"
-        required
-      />
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 shadow-sm" style="width: 100%; max-width: 400px;">
+      <h1 class="text-center mb-4">Connexion</h1>
+      <form @submit.prevent="handleLogin">
+        <!-- Email -->
+        <div class="mb-3">
+          <label for="email" class="form-label">Adresse email</label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            v-model="email"
+            placeholder="Entrez votre adresse email"
+            required
+          />
+        </div>
 
-      <label for="password">Mot de passe</label>
-      <input
-        type="password"
-        id="password"
-        v-model="password"
-        placeholder="Entrez votre mot de passe"
-        required
-      />
+        <!-- Mot de passe -->
+        <div class="mb-3">
+          <label for="password" class="form-label">Mot de passe</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            v-model="password"
+            placeholder="Entrez votre mot de passe"
+            required
+          />
+        </div>
 
-      <button type="submit">Se connecter</button>
-    </form>
-    <p>
-      Pas encore inscrit ? <a href="#" @click="goToRegister">Inscrivez-vous ici</a>
-    </p>
+        <!-- Bouton de connexion -->
+        <div class="d-grid mb-3">
+          <button type="submit" class="btn btn-primary">Se connecter</button>
+        </div>
+      </form>
+
+      <!-- Lien d'inscription -->
+      <p class="text-center mt-3">
+        Pas encore inscrit ?
+        <a href="#" @click="goToRegister" class="text-decoration-none">Inscrivez-vous ici</a>
+      </p>
+    </div>
   </div>
 </template>
 
