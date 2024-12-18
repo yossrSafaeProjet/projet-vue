@@ -9,7 +9,7 @@ const developperId  = route.params.developperId;
 const users=ref([]);
 onMounted(() => {
      // Vérifier si des projets sont stockées dans le localStorage
-     const storedProjets = localStorage.getItem('projets');
+     const storedProjets = localStorage.getItem('projects');
   // Vérifier si des tâches sont stockées dans le localStorage
   const storedTaches = localStorage.getItem('taches');
   if (storedTaches) {
