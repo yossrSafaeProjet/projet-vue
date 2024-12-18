@@ -100,6 +100,7 @@ export default {
       } else if (this.password !== this.confirmPassword) {
         alert("Les mots de passe ne correspondent pas !");
       } else {
+<<<<<<< HEAD
         // Génère un ID unique pour l'utilisateur (par exemple en utilisant un timestamp)
         const newUserId =crypto.randomUUID() ;
         console.log(newUserId);
@@ -108,6 +109,12 @@ export default {
           id: newUserId,          // ID unique basé sur le timestamp
           firstName: this.firstName,
           lastName: this.lastName,
+=======
+        const userId = crypto.randomUUID();
+        // Ajoute le nouvel utilisateur avec son email, son mot de passe et ses rôles
+        users.push({
+          id:userId,
+>>>>>>> fb3fd01 (deuxieme commit)
           email: this.email,
           password: this.password,
           roles: this.roles,
