@@ -3,7 +3,6 @@ import ProjetDeveloperView from './ProjetDeveloperView.vue'
 import ModalVerifierManagerDeveloperView from './ModalVerifierManagerDeveloperView.vue'
  import {ref} from 'vue'
 const projets = ref([{ id: 1, nom: "Projet1" }, { id: 2, nom: "Projet2" }]); 
-
 </script>
 <template>
   <h1>Liste des projets</h1>
