@@ -37,7 +37,7 @@
 
       <!-- Lien d'inscription -->
       <p class="text-center mt-3">
-        Pas encore inscrit ? 
+        Pas encore inscrit ?
         <a href="#" @click="goToRegister" class="text-decoration-none">Inscrivez-vous ici</a>
       </p>
     </div>
@@ -45,53 +45,55 @@
 </template>
 
 <script>
+import { useAuthStore } from "@/stores/auth";
+import { ref } from "vue";
+import { useRouter } from 'vue-router';
 export default {
-  data() {
-    return {
-      email: "",
-      password: "",
-    };
-  },
-  methods: {
-    handleLogin() {
-      console.log("Email: ", this.email);  // Vérifier que l'email est bien récupéré
-      console.log("Password: ", this.password);  // Vérifier que le mot de passe est bien récupéré
+  setup() {
+    const authStore = useAuthStore();
+    const email = ref("");
+    const password = ref("");
+    const router = useRouter();
 
+    const handleLogin = () => {
+      console.log("Email:", email.value); // Vérification
+      console.log("Password:", password.value);
+
+      // Récupérer les utilisateurs depuis localStorage
       const users = JSON.parse(localStorage.getItem("users")) || [];
 
-      // Recherche de l'utilisateur
+      // Rechercher l'utilisateur correspondant
       const user = users.find(
-        (user) => user.email === this.email && user.password === this.password
+        (u) => u.email === email.value && u.password === password.value
       );
 
-     if (user) {
+      if (user) {
         alert("Connexion réussie !");
-        const { id,email,password, firstName, lastName, roles } = user;
-         localStorage.setItem("firstName", JSON.stringify({  firstName}));
-        // Sauvegarde dans le localStorage
-        localStorage.setItem("authenticatedUser", JSON.stringify({ id,email,password, firstName, lastName, roles }));
-        localStorage.setItem("userRoles", JSON.stringify(roles));
-        console.log("authenticatedUser",JSON.parse(localStorage.getItem("authenticatedUser")));
-        if (roles.includes("Manager")) {
-            // Récupérer la liste existante ou initialiser un tableau vide
-            //const managerIds = JSON.parse(localStorage.getItem("managerIds")) || [];
-            
-            // Ajouter le nouvel ID à la liste (éviter les doublons si nécessaire)
-            //if (!managerIds.includes(id)) {
-                //managerIds.push(id);
-            //}
-            
-            // Mettre à jour localStorage avec la liste mise à jour
-           // localStorage.setItem("managerIds", JSON.stringify(managerIds));
-     }      
-    // Redirection vers le dashboard
-    this.$router.push("/dashboard");
-  } else {
-    alert("Nom d'utilisateur ou mot de passe incorrect !");
-  }},
-    goToRegister() {
-      this.$router.push("/register");
-    },
+        authStore.login(user); // Stocker les infos utilisateur dans Pinia
+
+        // Redirection selon les rôles
+        if (authStore.isManager()) {
+          // Si le rôle est "Manager", redirige vers la gestion des projets
+            router.push("/dashboard");
+        } else {
+          // Sinon, redirige vers le tableau de bord
+            router.push("/dashboard");
+        }
+      } else {
+        alert("Nom d'utilisateur ou mot de passe incorrect !");
+      }
+    };
+
+    const goToRegister = () => {
+       router.push("/register");
+    };
+
+    return {
+      email,
+      password,
+      handleLogin,
+      goToRegister,
+    };
   },
 };
 </script>

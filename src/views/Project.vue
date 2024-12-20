@@ -194,3 +194,129 @@ export default {
   },
 };
 </script>
+<style scoped>
+/* Style global pour le conteneur */
+div {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+/* Titre principal */
+h1 {
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* Informations du projet */
+h2 {
+  color: #34495e;
+  margin-bottom: 10px;
+}
+
+p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Boutons */
+button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+button[data-bs-toggle="modal"] {
+  background-color: #e67e22;
+}
+
+button[data-bs-toggle="modal"]:hover {
+  background-color: #d35400;
+}
+
+/* Liste des tâches */
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin: 10px 0;
+  background-color: #ecf0f1;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Formulaire de modification */
+form {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+}
+
+form div {
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button[type="submit"] {
+  background-color: #2ecc71;
+}
+
+button[type="submit"]:hover {
+  background-color: #27ae60;
+}
+
+button[type="button"] {
+  background-color: #e74c3c;
+}
+
+button[type="button"]:hover {
+  background-color: #c0392b;
+}
+
+/* Modal styles (optionnel pour amélioration) */
+.modal-content {
+  padding: 20px;
+  border-radius: 5px;
+  border: none;
+  background-color: #ffffff;
+}
+
+.modal-header,
+.modal-footer {
+  border: none;
+}
+</style>
+

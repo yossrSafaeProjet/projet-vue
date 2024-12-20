@@ -10,7 +10,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Créer une tâche</h5>
+          <h5 class="modal-title" id="">Créer une tâche</h5>
           <button
             type="button"
             class="btn-close"
@@ -185,5 +185,8 @@ function creerTache() {
   console.log("Nouvelle tâche créée:", nouvelleTache); // Vérifiez la tâche créée
   emit("task-created", nouvelleTache);
   emit("close-modal");
+}
+function closeModal() {
+  emit('close-modal');
 }
 </script>

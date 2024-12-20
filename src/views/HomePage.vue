@@ -18,12 +18,27 @@
     </div>
 
     <!-- Afficher pour ceux qui ont les deux rôles -->
-    <div v-if="isDeveloper && isManager">
-      <h2>Dashboard complet (Developer + Manager)</h2>
-      <p>Contenu accessible aux utilisateurs ayant les deux rôles.</p>
-      <button @click="GoToDeveloper">Développeur</button>
-      <button @click="GoToManager">Manager</button>
+    <div v-if="isDeveloper && isManager" class="dashboard-container">
+    <div class="card text-center shadow-sm">
+      <div class="card-header bg-primary text-white">
+        <h2>Dashboard complet</h2>
+        <small>(Développeur + Manager)</small>
+      </div>
+      <div class="card-body">
+        <p class="card-text">
+          Contenu accessible aux utilisateurs ayant les deux rôles.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+          <button class="btn btn-outline-primary" @click="GoToDeveloper">
+            Développeur
+          </button>
+          <button class="btn btn-outline-secondary" @click="GoToManager">
+            Manager
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -40,8 +55,9 @@ export default {
   data() {
     return {
       roles: [],
-      authenticatedUser: null, 
-
+      authenticatedUser: null,
+      projetsAvecTaches:null,
+      storedProjets:null,
     };
   },
   computed: {
@@ -56,10 +72,8 @@ export default {
     },
   },
   created() {
-    // Récupération des rôles depuis le localStorage
     try {
       const storedRoles = JSON.parse(localStorage.getItem("userRoles"));
-
       if (Array.isArray(storedRoles)) {
         this.roles = storedRoles;
       } else {
@@ -69,19 +83,48 @@ export default {
       console.error("Erreur lors de la récupération des rôles :", error);
     }
   },
-  GoToDeveloper(){
-    const developerId = this.authenticatedUser?.id || "unknown";
-    window.location.href=`/projetDeveloper/${developerId}`;
-  },
-  GoToManager(){
-    window.location.href=``;
+  methods: {
+    GoToDeveloper() {
+      if (!Array.isArray(this.storedProjets)) {
+      alert("Les projets ne sont pas valides ou manquants.");
+      return;
+    }
+    console.log('projets',this.storedProjets);
+    console.log('auth',this.authenticatedUser?.id);
+    // Filtrer les projets qui ont des tâches affectées au développeur
+    this.projetsAvecTaches = this.storedProjets.filter((projet) => {
+      return projet.tasks && projet.tasks.some((tache) => tache.developerId === this.authenticatedUser?.id);
+    });
+
+
+    // Si aucun projet n'est trouvé, alerter
+    if (this.projetsAvecTaches.length === 0) {
+      alert("Oops, vous n'avez pas de tâches associées à un projet.");
+    }else{
+      const developerId = this.authenticatedUser?.id || "unknown";
+    
+      window.location.href = `/projetDeveloper/${developerId}`;
+    }
+
+    },
+    GoToManager() {
+      window.location.href = `/ListeProjects`;
+    },
+    avancementProjet() {
+      alert("Afficher l'avancement des projets pour Manager");
+    },
   },
   mounted() {
-    // Récupération de l'utilisateur authentifié depuis le localStorage
     try {
-      this.authenticatedUser = JSON.parse(localStorage.getItem("authenticatedUser")) || {};
+      this.authenticatedUser =
+        JSON.parse(localStorage.getItem("authenticatedUser")) || {};
+       this. storedProjets = JSON.parse(localStorage.getItem("projects")) || [];
+    
     } catch (error) {
-      console.error("Erreur lors de la récupération de l'utilisateur authentifié :", error);
+      console.error(
+        "Erreur lors de la récupération de l'utilisateur authentifié :",
+        error
+      );
     }
   },
 };

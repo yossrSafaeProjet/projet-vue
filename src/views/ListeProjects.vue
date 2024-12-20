@@ -11,25 +11,13 @@
         <tr>
           <th>Nom</th>
           <th>Description</th>
-          <th>Managers</th>
-          <th>Actions</th>
+          <th>Détails du projet</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="project in projects" :key="project.id">
           <td>{{ project.name }}</td>
           <td>{{ project.description }}</td>
-          <td>
-            <!-- Affiche la liste des managers du projet -->
-            <span v-if="project.managerIds && project.managerIds.length">
-              <ul>
-                <li v-for="managerId in project.managerIds" :key="managerId">
-                  {{ getManagerName(managerId) }}
-                </li>
-              </ul>
-            </span>
-            <span v-else>Aucun manager</span>
-          </td>
           <td>
             <button @click="goToDashboard(project.id)">Voir les détails du projet</button>
           </td>
@@ -58,14 +46,15 @@ export default {
   created() {
     // Récupérer les projets depuis localStorage
     const storedProjects = localStorage.getItem('projects');
+        // Récupérer les rôles de l'utilisateur depuis localStorage
+    const currentUser = JSON.parse(localStorage.getItem("authenticatedUser"));
     if (storedProjects) {
       this.projects = JSON.parse(storedProjects);
     } else {
       this.projects = [];
     }
 
-    // Récupérer les rôles de l'utilisateur depuis localStorage
-    const currentUser = JSON.parse(localStorage.getItem("authenticatedUser"));
+
     if (currentUser) {
       this.userRoles = currentUser.roles || [];
     }
@@ -79,7 +68,9 @@ export default {
   methods: {
     redirige()
     {
-      this.$router.push({ name: "ManageProjects"});
+      const currentUser = JSON.parse(localStorage.getItem("authenticatedUser"));
+      const managerId=currentUser.id
+      this.$router.push({ name: "ManageProjects",params: { managerId}});
     },
     goToDashboard(projectId) {
       // Vérifiez si l'utilisateur a le rôle de Manager
