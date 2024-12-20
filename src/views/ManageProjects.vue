@@ -98,7 +98,6 @@ export default {
   mounted() {
      this.authenticatedUser = JSON.parse(localStorage.getItem('authenticatedUser'));
      this.projects = JSON.parse(localStorage.getItem('projects'))||[];  
-
     // Charger les projets depuis localStorage lors du montage du composant
 
     this.loadProjects();
@@ -160,25 +159,39 @@ export default {
 
     // Supprimer un projet
     deleteProject(id) {
-      this.projects = this.projects.filter((project) => project.id !== id);
-      // Sauvegarder les projets mis à jour dans le localStorage
-      this.saveProjects();
-    },
+  // Filtrer les projets pour retirer celui avec l'ID donné
+  this.projects = this.projects.filter((project) => project.id !== id);
+  this.projectsManager = this.projects;
+  this.saveProjects();
+},
 
-    // Sauvegarder les projets dans le localStorage
-    saveProjects() {
 
-      localStorage.setItem('projects', JSON.stringify(this.projects));
-      window.location.reload();
-    },
+ saveProjects() {
+    if (this.authenticatedUser) {
+      const storedProjects = JSON.parse(localStorage.getItem('projects')) || [];
+      
+      // Retirer les projets de ce manager pour éviter les doublons
+      const filteredProjects = storedProjects.filter(
+        (project) => project.managerId !== this.authenticatedUser.id
+      );
+      
+      // Ajouter les projets actuels du manager
+      const updatedProjects = [...filteredProjects, ...this.projects];
+      localStorage.setItem('projects', JSON.stringify(updatedProjects));
+    }
+  },
 
-    // Charger les projets depuis le localStorage
     loadProjects() {
-      const storedProjects = JSON.parse(localStorage.getItem('projects'));
-      if (storedProjects) {
-        this.projectsManager=storedProjects.filter(projet=>projet.managerId===this.authenticatedUser.id);
-      }
-    },
+    if (this.authenticatedUser) {
+      const storedProjects = JSON.parse(localStorage.getItem('projects')) || [];
+      
+      // Filtrer pour obtenir uniquement les projets du manager connecté
+      this.projects = storedProjects.filter(
+        (project) => project.managerId === this.authenticatedUser.id
+      );
+      this.projectsManager = this.projects; 
+    }
+  },
 
     // Réinitialiser le formulaire
     resetForm() {
