@@ -39,13 +39,22 @@
               <legend class="col-form-label col-sm-4 pt-0">Statut</legend>
               <div class="col-sm-8">
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" id="valid" value="Validée" v-model="statut" :disabled="isManager" />
+                  <input class="form-check-input" type="radio" id="a-faire" value="A faire" v-model="statut" :disabled="isManager" />
+                  <label class="form-check-label" for="a-faire">A faire</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="complete" value="Complétée" v-model="statut" :disabled="isManager" />
+                  <label class="form-check-label" for="complete">Complétée</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="valid" value="Validée" v-model="statut" disabled />
                   <label class="form-check-label" for="valid">Validée</label>
                 </div>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" id="non-valid" value="Non-validée" v-model="statut" :disabled="!isManager" />
                   <label class="form-check-label" for="non-valid">Non validée</label>
                 </div>
+                
               </div>
             </fieldset>
 

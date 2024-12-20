@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Dashboard</h1>
+    <h1  class="page-title" >Dashboard</h1>
 
     <!-- Afficher pour Developer uniquement -->
     <div v-if="isDeveloper && !isManager">
@@ -18,6 +18,8 @@
     <div v-if="isDeveloper && isManager">
       <h2>Dashboard complet (Developer + Manager)</h2>
       <p>Contenu accessible aux utilisateurs ayant les deux rôles.</p>
+      <button @click="GoToDeveloper">Développeur</button>
+      <button @click="GoToManager">Manager</button>
     </div>
   </div>
 </template>
@@ -31,7 +33,9 @@ export default {
   },
   data() {
     return {
-      roles: [], // Liste des rôles récupérés
+      roles: [],
+      authenticatedUser: null, 
+
     };
   },
   computed: {
@@ -56,5 +60,22 @@ export default {
       console.error("Erreur lors de la récupération des rôles :", error);
     }
   },
+  GoToDeveloper(){
+    const developerId = this.authenticatedUser?.id || "unknown";
+    window.location.href=`/projetDeveloper/${developerId}`;
+  },
+  GoToManager(){
+    window.location.href=``;
+  },
+  mounted() {
+    // Récupération de l'utilisateur authentifié depuis le localStorage
+    try {
+      this.authenticatedUser = JSON.parse(localStorage.getItem("authenticatedUser")) || {};
+    } catch (error) {
+      console.error("Erreur lors de la récupération de l'utilisateur authentifié :", error);
+    }
+  },
 };
 </script>
+
+<style src="@/assets/sharedStyle.css"></style>
