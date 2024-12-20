@@ -106,6 +106,9 @@ export default {
       password: this.password,
       roles: this.roles,
     });
+        // Enregistre les utilisateurs dans le localStorage
+        localStorage.setItem("users", JSON.stringify(users));
+        localStorage.setItem("lastUserId", newUserId);
 
     // Sauvegarde la liste mise à jour des utilisateurs
     localStorage.setItem("users", JSON.stringify(users));

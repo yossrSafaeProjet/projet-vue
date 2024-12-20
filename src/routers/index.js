@@ -10,6 +10,7 @@ import ProjetDeveloperView from "@/views/ProjetDeveloperView.vue";
 import ListeAllTachesView from "@/views/ListeAllTachesView.vue";
 import AjoutCommentaireModalView from "@/views/AjoutCommentaireModalView.vue";
 import ProjectOverview from "@/views/ProjectOverview.vue";
+import ListAllCommentaireView from "@/views/ListAllCommentaireView.vue";
 
 
 const routes = [
@@ -49,9 +50,10 @@ const routes = [
     component: ListeProjects,
   },
   {
-    path: "/allTaches/:projetId",
+    path: "/allTaches/:projetId/:showAllTasks",
     name: "allTaches",
     component: ListeAllTachesView,
+    props: true,
   },
   {
     path: "/ajoutCommentaire",
@@ -70,7 +72,11 @@ const routes = [
     component: ProjectOverview,
     props: true, 
   },
-  
+  {
+    path: "/allCommentaire/:tacheId",
+    name: "allCommentaire",
+    component: ListAllCommentaireView,
+  },
 ];
 
 

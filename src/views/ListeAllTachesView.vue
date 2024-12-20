@@ -1,80 +1,176 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import AjoutCommentaireModalView from './AjoutCommentaireModalView.vue';
 
+// Définition des props
+const props = defineProps([ 'showAllTasks']);
+const isShowAllTasks = computed(() => props.showAllTasks === 'true');
+
+// Variables réactives
 const taches = ref([]);
 const projetNom = ref(''); // Pour stocker le nom du projet
+const selectedTache = ref(null);
 
 // Récupérer l'ID du projet depuis la route
 const route = useRoute();
 const projetId = route.params.projetId;
 
+const commentaires = ref([]);
+const authenticatedUser = ref(null);
+const storedProjets = ref([]);
+// Récupération des données depuis localStorage lors du montage du composant
 onMounted(() => {
-  // Vérifier si des tâches sont stockées dans le localStorage
-  const storedProjets = JSON.parse(localStorage.getItem('projects'));
+   storedProjets.value= JSON.parse(localStorage.getItem('projects')) || [];
+  authenticatedUser.value = JSON.parse(localStorage.getItem('authenticatedUser')) || {};
+/*   console.log(props.showAllTasks) */
   if (storedProjets) {
-    const project = storedProjets.find((p) => p.id === projetId);
+    const project = storedProjets.value.find((p) => p.id === projetId);
     projetNom.value = project.name;
-    // prendre toutes les taches du projet choisi
-    taches.value = project.tasks;
+ 
+  if (!isShowAllTasks.value) {
+     taches.value = project.tasks.filter((tache) => 
+   tache.developerId === authenticatedUser.value.id
+  );
+
   } else {
+    taches.value=project.tasks;
+  }}else{
     alert('Pas de tâches pour ce projet!');
-    window.location.href = '/projetDeveloper';
   }
+
+  commentaires.value = JSON.parse(localStorage.getItem('commentaires')) || [];
 });
+
+
+// Fonction pour ajouter un commentaire
+function addCommentaire(commentaire) {
+  commentaires.value.push(commentaire);
+  localStorage.setItem('commentaires', JSON.stringify(commentaires.value));
+  alert('Commentaire ajouté avec succès.');
+}
+
+// Fonction pour naviguer vers la liste des commentaires d'une tâche
+function GoToCommentaireList() {
+  window.location.href = `/allCommentaire/${selectedTache.value.id}`;
+}
+
+function updateStatus(tache, newStatus) {
+  // Met à jour le statut de la tâche
+  tache.statut = newStatus;
+
+  // Récupère le projet auquel appartient la tâche
+  const project = storedProjets.value.find((p) => p.tasks.includes(tache));
+  if (project) {
+    // Met à jour les projets dans le localStorage
+    localStorage.setItem("projects", JSON.stringify(storedProjets.value));
+    alert(`Statut de la tâche "${tache.titre}" mis à jour en "${newStatus}"`);
+  } else {
+    console.error("Tâche non trouvée dans un projet.");
+  }
+}
+ function Retourner(){
+  window.location.href="/dashboard"
+ }
 </script>
 
 <template>
-  <h1>Liste des tâches associées au projet {{projetNom}} </h1>
+
+  <h1  class="page-title">Liste des tâches associées au projet {{ projetNom }}</h1>
+  <button @click="Retourner" >Retour</button>
+  <div class="card-container">
+
   <div v-for="(tache, i) in taches" :key="tache.id" class="card mb-3" style="width: 18rem;">
     <div class="card-body">
       <h5 class="card-title">Tâche {{ i + 1 }}</h5>
-      <h6 class="card-subtitle mb-2 text-muted">Nom de la tâche: {{ tache.titre }}</h6>
-      <h6 class="card-subtitle mb-2 text-muted">Description : {{ tache.description }}</h6>
-      <h6 class="card-subtitle mb-2 text-muted">Développeur Affecté : {{ tache.developper }}</h6>
+      <div class="card-content">
+        <div class="field">
+          <span class="field-label">Nom de la tâche :</span>
+          <span class="field-value">{{ tache.titre }}</span>
+        </div>
+        <div class="field">
+          <span class="field-label">Description :</span>
+          <span class="field-value">{{ tache.description }}</span>
+        </div>
+        <div class="field">
+          <span class="field-label">Développeur Affecté :</span>
+          <span class="field-value">{{ tache.developper }}</span>
+        </div>
+        <div class="field">
+          <div class="field-container">
+          <span class="field-label">Statut :</span>
+        <select
+          id="status-select"
+          class="form-select"
+          v-model="tache.statut"
+          @change="updateStatus(tache, tache.statut)"
+          :style="{
+            backgroundColor: tache.statut === 'complété' ? '#81c784' : '#ffeb3b', 
+            borderColor: tache.statut === 'complété' ? '#388e3c' : '#00796b'
+          }"
+        >
+          <option value="en cours">En cours</option>
+          <option value="complété">Complété</option>
+        </select>
+      </div>
+    </div>
+  </div>
 
       <!-- Premier bouton : Ajouter un commentaire -->
-      <button class="btn btn-primary custom-btn" data-bs-toggle="modal" data-bs-target="#AjoutCommentaireModalView">
+      <button
+        class="btn btn-primary custom-btn"
+        data-bs-toggle="modal"
+        data-bs-target="#AjoutCommentaireModalView"
+        @click="selectedTache = tache">
         Ajouter un commentaire
       </button>
 
       <!-- Modal pour ajouter un commentaire -->
-      <AjoutCommentaireModalView />
+      <AjoutCommentaireModalView
+        :tache="selectedTache"
+        @commentaire-created="addCommentaire" 
+      />
 
       <!-- Deuxième bouton : Voir les commentaires -->
-      <button class="btn btn-secondary custom-btn" data-bs-toggle="modal" data-bs-target="#voirCommentairesModal">
-        Voir toutes les commentaires associés
+      <button
+        class="btn btn-primary custom-btn"
+        @click="selectedTache = tache; GoToCommentaireList()">
+        Voir les commentaires
       </button>
+
     </div>
   </div>
+  </div>
 </template>
-
+<style src="@/assets/sharedStyle.css"></style>
 <style scoped>
-/* Style des boutons */
-.custom-btn {
-  width: 100%;
-  margin-top: 10px; /* Ajoute de l'espace entre les boutons */
-  font-size: 1rem; /* Taille de la police du bouton */
-  padding: 10px 0; /* Padding pour augmenter la hauteur des boutons */
+
+.form-label {
+  font-weight: bold;
+  color: #333;
 }
 
-.custom-btn:first-child {
-  background-color: #007bff; /* Couleur du bouton "Ajouter un commentaire" */
-  border-color: #007bff;
+.form-select {
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  background-color: #f9f9f9; 
 }
 
-.custom-btn:last-child {
-  background-color: #6c757d; /* Couleur du bouton "Voir les commentaires" */
-  border-color: #6c757d;
+#status-select {
+  margin-top: 0.5rem;
+  background-color: #e0f7fa; 
+  border-color: #00796b;
 }
 
-/* Ajout de la mise en forme lors du survol des boutons */
-.custom-btn:hover {
-  opacity: 0.9;
+.card-body select[ng-model="status"] {
+  background-color: #ffeb3b; 
 }
 
-.custom-btn:focus {
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5); /* Effet de focus sur les boutons */
+.card-body select[ng-model="status"]:valid {
+  background-color: #81c784;
+  border-color: #388e3c; 
 }
+
 </style>
