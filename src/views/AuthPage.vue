@@ -37,7 +37,7 @@
 
       <!-- Lien d'inscription -->
       <p class="text-center mt-3">
-        Pas encore inscrit ?
+        Pas encore inscrit ? 
         <a href="#" @click="goToRegister" class="text-decoration-none">Inscrivez-vous ici</a>
       </p>
     </div>
@@ -64,26 +64,31 @@ export default {
         (user) => user.email === this.email && user.password === this.password
       );
 
-      if (user) {
+     if (user) {
         alert("Connexion réussie !");
-        console.log(user);  // Vérifie la structure de l'objet 'user'
-        localStorage.setItem("authenticatedUser", JSON.stringify(user));
-        localStorage.setItem("userRoles", JSON.stringify(user.roles));
-
-         // Si l'utilisateur est un manager, on stocke son ID
-            if (user.roles && user.roles.includes('Manager')) {
-            console.log('ID du manager:', user.id);  // Vérifie que l'ID est récupéré correctement
-            if (user.id) {
-                localStorage.setItem("managerId", user.id);  // Stocke l'ID du manager
-            } else {
-                console.error('ID du manager non trouvé');
-            }
-            }
-            this.$router.push("/dashboard");
-      } else {
-        alert("Nom d'utilisateur ou mot de passe incorrect !");
-      }
-    },
+        const { id,email,password, firstName, lastName, roles } = user;
+         localStorage.setItem("firstName", JSON.stringify({  firstName}));
+        // Sauvegarde dans le localStorage
+        localStorage.setItem("authenticatedUser", JSON.stringify({ id,email,password, firstName, lastName, roles }));
+        localStorage.setItem("userRoles", JSON.stringify(roles));
+        console.log("authenticatedUser",JSON.parse(localStorage.getItem("authenticatedUser")));
+        if (roles.includes("Manager")) {
+            // Récupérer la liste existante ou initialiser un tableau vide
+            //const managerIds = JSON.parse(localStorage.getItem("managerIds")) || [];
+            
+            // Ajouter le nouvel ID à la liste (éviter les doublons si nécessaire)
+            //if (!managerIds.includes(id)) {
+                //managerIds.push(id);
+            //}
+            
+            // Mettre à jour localStorage avec la liste mise à jour
+           // localStorage.setItem("managerIds", JSON.stringify(managerIds));
+     }      
+    // Redirection vers le dashboard
+    this.$router.push("/dashboard");
+  } else {
+    alert("Nom d'utilisateur ou mot de passe incorrect !");
+  }},
     goToRegister() {
       this.$router.push("/register");
     },

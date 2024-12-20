@@ -24,10 +24,18 @@
               <label for="developer" class="col-sm-4 col-form-label">Assigner à un développeur</label>
               <div class="col-sm-8">
                 <select class="form-control" v-model="developerId">
+                    <option>Non affectée</option>
                   <option v-for="developer in developers" :key="developer.id" :value="developer.id">
                     {{ developer.firstName }} {{ developer.lastName }}
                   </option>
                 </select>
+              </div>
+            </div>
+            <!-- Ajout du champ de date limite -->
+            <div class="form-group row mb-3">
+              <label for="deadline" class="col-sm-4 col-form-label">Date limite</label>
+              <div class="col-sm-8">
+                <input type="date" class="form-control" id="deadline" v-model="deadline" required />
               </div>
             </div>
             <fieldset class="form-group row mb-3">
@@ -67,6 +75,7 @@ const props = defineProps({
       description: '',
       statut: 'Non-validée',
       developerId: null,
+      deadline: '', // Ajouter la deadline à la tâche
     }),
   },
 });
@@ -77,6 +86,7 @@ const titreTache = ref(props.task.titre);
 const description = ref(props.task.description);
 const statut = ref(props.task.statut);
 const developerId = ref(props.task.developerId || null);
+const deadline = ref(props.task.deadline || ''); // Initialisation de la date limite
 
 // Récupérer les développeurs depuis le localStorage
 const users = JSON.parse(localStorage.getItem('users')) || [];
@@ -88,7 +98,7 @@ const isManager = computed(() => roles.includes('Manager'));
 
 // Fonction pour mettre à jour la tâche
 function editerTache() {
-  if (!titreTache.value || !description.value || !statut.value) {
+  if (!titreTache.value || !description.value || !statut.value || !deadline.value) {
     alert('Veuillez remplir tous les champs.');
     return;
   }
@@ -99,6 +109,7 @@ function editerTache() {
     description: description.value,
     statut: statut.value,
     developerId: developerId.value,
+    deadline: deadline.value, // Ajouter la date limite à la tâche mise à jour
   };
 
   console.log('Tâche mise à jour:', tacheMiseAJour);

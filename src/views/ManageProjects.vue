@@ -24,8 +24,11 @@
       <p>{{ project.description }}</p>
       <button @click="editProject(project)">Modifier</button>
       <button @click="deleteProject(project.id)">Supprimer</button>
-      <button @click="openCreateTaskModal(project)">Ajouter une tâche</button>
-
+      <button
+        data-bs-toggle="modal"
+        data-bs-target="#createTacheModal" 
+        @click="openCreateTaskModal(project)">Ajouter une tâche</button>
+      
       <!-- Liste des tâches -->
       <div v-if="project.tasks && project.tasks.length">
         <ul>
@@ -47,8 +50,8 @@
     </div>
 
     <!-- Modal pour les tâches -->
-    <CreateTacheModalView
-      v-if="selectedProject && !editingTaskId" 
+    <CreateTacheModalView 
+      v-if="!editingTaskId" 
       :project="selectedProject"
       :task="selectedTask"
       @task-created="addTaskToProject"
@@ -76,27 +79,31 @@ export default {
       selectedProject: null,
       selectedTask: null,
       editingTaskId: null,
-      managerIds:[], // Identifiant du manager
+      managerIds: [], // Liste des identifiants des managers
     };
   },
   mounted() {
     this.loadProjects();
-    this.recupererManagerId();
+    this.recupererManagerIds();
   },
   computed: {
     filteredProjects() {
-      // Afficher uniquement les projets auxquels l'utilisateur appartient en tant que manager
-      return this.projects.filter(project => project.managerIds.includes(this.managerIds[0]));
+      if (!this.managerIds.length || !Array.isArray(this.projects)) {
+        return []; // Retourne un tableau vide si managerIds ou projects sont invalides
+      }
+      return this.projects.filter(project => 
+        Array.isArray(project.managers) &&
+        project.managers.some(managerId => this.managerIds.includes(managerId))
+        );
     },
   },
   methods: {
-    recupererManagerId() {
-      // Récupérer les IDs des managers depuis le localStorage
-      const managerIds = localStorage.getItem('managerIds');
-      if (managerIds) {
-        this.managerIds = JSON.parse(managerIds);
+    recupererManagerIds() {
+      const storedManagerIds = localStorage.getItem('managerIds');
+      if (storedManagerIds) {
+        this.managerIds = JSON.parse(storedManagerIds);
       } else {
-        console.warn('Aucun ID de manager trouvé.');
+        console.warn('Aucun ID de managers trouvé.');
       }
     },
     saveProject() {
@@ -111,7 +118,7 @@ export default {
           ...this.newProject,
           id: crypto.randomUUID(),
           tasks: [],
-          managerIds: [...this.managerIds],
+          managers: this.managerIds, // Assignation de tous les managers
         };
         this.projects.push(newProject);
       }
@@ -161,7 +168,6 @@ export default {
       if (project) {
         const taskIndex = project.tasks.findIndex(task => task.id === updatedTask.id);
         if (taskIndex !== -1) {
-          // Remplacez directement la tâche par la nouvelle version
           project.tasks[taskIndex] = updatedTask;
           this.saveProjects();
         }
@@ -170,8 +176,8 @@ export default {
     },
     openCreateTaskModal(project) {
       this.selectedProject = project;
-      this.selectedTask = null; // Réinitialiser la tâche sélectionnée pour la création
-      this.editingTaskId = null; // Désactiver l'édition
+      this.selectedTask = null;
+      this.editingTaskId = null;
     },
     addTaskToProject(task) {
       const project = this.projects.find(p => p.id === this.selectedProject.id);

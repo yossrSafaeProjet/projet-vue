@@ -12,15 +12,12 @@ const projetId = route.params.projetId;
 
 onMounted(() => {
   // Vérifier si des tâches sont stockées dans le localStorage
-  const storedTaches = localStorage.getItem('taches');
-  if (storedTaches) {
-    const allTaches = JSON.parse(storedTaches);
-    // Filtrer les tâches liées au projet actuel
-    taches.value = allTaches.filter(tache => tache.projetId === projetId);
-
-    // Récupérer le nom du projet pour l'afficher dans le titre
-    const projet = allTaches.find(tache => tache.projetId === projetId);
-    projetNom.value = projet ? projet.nom : 'Projet non trouvé';
+  const storedProjets = JSON.parse(localStorage.getItem('projects'));
+  if (storedProjets) {
+    const project = storedProjets.find((p) => p.id === projetId);
+    projetNom.value = project.name;
+    // prendre toutes les taches du projet choisi
+    taches.value = project.tasks;
   } else {
     alert('Pas de tâches pour ce projet!');
     window.location.href = '/projetDeveloper';
@@ -29,7 +26,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <h1>Liste des tâches associées au projet </h1>
+  <h1>Liste des tâches associées au projet {{projetNom}} </h1>
   <div v-for="(tache, i) in taches" :key="tache.id" class="card mb-3" style="width: 18rem;">
     <div class="card-body">
       <h5 class="card-title">Tâche {{ i + 1 }}</h5>

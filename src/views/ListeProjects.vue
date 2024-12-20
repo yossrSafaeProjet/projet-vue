@@ -1,16 +1,17 @@
 <template>
   <div>
     <h1>Mes Projets</h1>
-
+     <button @click="redirige()">Ajouter Project</button>
     <!-- Loader si les données sont en cours de chargement -->
     <div v-if="loading">Chargement des projets...</div>
-
+  
     <!-- Tableau pour afficher les projets -->
     <table v-else-if="projects.length" border="1" width="100%">
       <thead>
         <tr>
           <th>Nom</th>
           <th>Description</th>
+          <th>Managers</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -19,7 +20,18 @@
           <td>{{ project.name }}</td>
           <td>{{ project.description }}</td>
           <td>
-            <button @click="goToDashboard(project.id)">Voir le tableau de bord</button>
+            <!-- Affiche la liste des managers du projet -->
+            <span v-if="project.managerIds && project.managerIds.length">
+              <ul>
+                <li v-for="managerId in project.managerIds" :key="managerId">
+                  {{ getManagerName(managerId) }}
+                </li>
+              </ul>
+            </span>
+            <span v-else>Aucun manager</span>
+          </td>
+          <td>
+            <button @click="goToDashboard(project.id)">Voir les détails du projet</button>
           </td>
         </tr>
       </tbody>
@@ -37,8 +49,10 @@ export default {
   name: "ListeProjects",
   data() {
     return {
-      projects: [],     // Liste des projets
-      loading: false,   // Indique si les données sont en cours de chargement
+      projects: [],  // Liste des projets
+      loading: false, // Indique si les données sont en cours de chargement
+      userRoles: [],  // Rôles de l'utilisateur
+      users: [], // Liste des utilisateurs (avec id et name)
     };
   },
   created() {
@@ -49,12 +63,86 @@ export default {
     } else {
       this.projects = [];
     }
+
+    // Récupérer les rôles de l'utilisateur depuis localStorage
+    const currentUser = JSON.parse(localStorage.getItem("authenticatedUser"));
+    if (currentUser) {
+      this.userRoles = currentUser.roles || [];
+    }
+
+    // Récupérer la liste des utilisateurs (à adapter selon votre logique de données)
+    const storedUsers = localStorage.getItem('users');
+    if (storedUsers) {
+      this.users = JSON.parse(storedUsers);
+    }
   },
   methods: {
-    // Redirige vers la vue du tableau de bord pour un projet donné
-    goToDashboard(projectId) {
-      this.$router.push({ name: "project-dashboard", params: { projectId } });
+    redirige()
+    {
+      this.$router.push({ name: "ManageProjects"});
     },
+    goToDashboard(projectId) {
+      // Vérifiez si l'utilisateur a le rôle de Manager
+      console.log(this.userRoles[0]);
+      if (this.userRoles[0] == "Manager") {
+        this.addManagerToProject(projectId);
+      }
+
+      // Rediriger vers la page de détails du projet
+      console.log("id",projectId);
+      this.$router.push({ name: "Project", params: { projectId } });
+    },
+
+    addManagerToProject(projectId) {
+      // Vérifiez si les informations de l'utilisateur courant existent
+      const currentUser = JSON.parse(localStorage.getItem("authenticatedUser"));
+      console.log(currentUser);
+      if (!currentUser) {
+        console.error("Aucune information utilisateur trouvée.");
+        return; // Si aucune information utilisateur n'est trouvée, arrêter l'exécution
+      }
+
+      // Chercher le projet correspondant
+      const project = this.projects.find(p => p.id === projectId);
+      const roles= JSON.parse(localStorage.getItem("userRoles"));
+      
+      if (project) {
+       if (roles.includes("Manager")) {
+          // Vérifier si le projet a déjà une liste de managerIds
+          if (!project.managerIds) {
+            project.managerIds = [];
+          }
+
+          console.log("Manager actuel:", currentUser.id);
+
+          // Ajouter l'utilisateur comme Manager s'il n'est pas déjà dans la liste
+          if (!project.managerIds.includes(currentUser.id)) {
+            project.managerIds.push(currentUser.id);
+            console.log(`Utilisateur ${currentUser.id} ajouté à la liste des managers du projet ${project.name}`);
+          }
+
+          // Mettre à jour la liste des managers globaux dans localStorage
+          const managerIds = JSON.parse(localStorage.getItem("managerIds")) || [];
+          if (!managerIds.includes(currentUser.id)) {
+            managerIds.push(currentUser.id);
+          }
+
+          // Sauvegarder les mises à jour dans le localStorage
+          localStorage.setItem("managerIds", JSON.stringify(managerIds));
+          localStorage.setItem("projects", JSON.stringify(this.projects));
+          console.log("Projets mis à jour:", this.projects);
+        }
+
+      } else {
+        console.error("Le projet n'a pas été trouvé.");
+      }
+    },
+
+    // Méthode pour récupérer le nom du manager à partir de l'ID
+    getManagerName(managerId) {
+      const manager = this.users.find(user => user.id === managerId);
+      return manager ? manager.name : 'Nom inconnu';
+    }
   },
 };
 </script>

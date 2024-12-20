@@ -70,38 +70,52 @@
   
   <script setup>
   import { ref } from "vue";
-  import { useRoute } from "vue-router";
-  
-  const selectedRole = ref("");
-  const route = useRoute();
-  const userId = route.params.userId;
-  
+  const props = defineProps({
+  projet: {
+    type: Object,
+    required: true,
+  },
+});
+
   function confirmRole() {
-    const users = JSON.parse(localStorage.getItem("users")) || [];
-  
-    // Vérifier si un rôle est sélectionné
-    if (!selectedRole.value) {
-      alert("Veuillez sélectionner un rôle !");
-      return;
-    }
-  
-    // Recherche de l'utilisateur par ID et validation du rôle
-    const user = users.find(
-      (user) => user.id === userId && user.roles.includes(selectedRole.value)
-    );
-  
-    if (user) {
-      alert(`Vous êtes identifié comme ${selectedRole.value}`);
-      // Redirection en fonction du rôle
-      if (selectedRole.value === "Developer") {
-        window.location.href = `/projetDeveloper/${userId}`;
-      } else if (selectedRole.value === "Manager") {
-        window.location.href = "/listemanager";
-      }
-    } else {
-      alert("Vous n'avez pas l'autorisation pour ce rôle !");
-    }
+  // Récupération des données mises à jour depuis le localStorage
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const authenticatedUser = JSON.parse(localStorage.getItem("authenticatedUser")) || null;
+  const selectedRole = JSON.parse(localStorage.getItem("userRoles")) || [];
+  // Vérification : Si aucun utilisateur authentifié, retourner
+  if (!authenticatedUser || !authenticatedUser.id) {
+    alert("Utilisateur non authentifié !");
+    return;
   }
+
+  // Recherche de l'utilisateur basé sur l'ID et les rôles
+  const user = users.find(
+    (user) =>{
+        user.id === authenticatedUser.id &&
+        user.roles[0]===selectedRole[0]
+        console.log("1",user.id === authenticatedUser.id)
+        console.log("2",user.roles[0]===selectedRole[0])
+        console.log("3",user)
+        return user;
+    }
+
+    
+  );
+  console.log(user)
+
+  if (user) {
+    alert(`Vous êtes identifié comme ${selectedRole}`);
+    // Redirection en fonction du rôle
+    if (selectedRole[0] === "Developer") {
+      window.location.href = `/projetDeveloper/${authenticatedUser.id}/${props.projet.id}`;
+    } else if (selectedRole[0]=== "Manager") {
+      window.location.href = "/ManageProjects";
+    }
+  } else {
+    alert("Vous n'avez pas l'autorisation pour ce rôle !");
+  }
+}
+
   </script>
   
   <style scoped>

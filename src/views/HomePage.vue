@@ -1,32 +1,65 @@
-<script setup>
-import { ref, onMounted } from 'vue';
-import ModalVerifierManagerDeveloperView from './ModalVerifierManagerDeveloperView.vue';
-
-// Déclare la référence pour les projets
-const projets = ref([]);
-
-// Lors du montage du composant, on charge les projets depuis le localStorage
-onMounted(() => {
-  const storedProjects = localStorage.getItem('projects');
-  if (storedProjects) {
-    projets.value = JSON.parse(storedProjects);
-  }
-});
-</script>
-
 <template>
-  <h1>Liste des projets</h1>
-  <div v-for="(projet, i) in projets" :key="projet.id" class="card mb-3" style="width: 18rem;">
-    <div class="card-body">
-      <h5 class="card-title">Projet {{ i + 1 }}</h5>
-      <h6 class="card-subtitle mb-2 text-muted">{{ projet.nom }}</h6>
-      <div>
-        <!-- Bouton pour ouvrir le modal -->
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#roleModal">
-          Vérifier votre rôle
-        </button>
-        <ModalVerifierManagerDeveloperView />
-      </div>
+  <div>
+    <h1>Dashboard</h1>
+
+    <!-- Afficher pour Developer uniquement -->
+    <div v-if="isDeveloper && !isManager">
+      
+      <ProjetDeveloperView />
+    </div>
+
+    <!-- Afficher pour Manager uniquement -->
+    <div v-if="isManager && !isDeveloper">
+      <h2>Gestion des projets pour Manager</h2>
+      <h6>Gestion spécifique au rôle Manager</h6>
+      <button @click="avancementProjet()"> </button>
+      <ListeProjects :projects="projects" />
+
+    </div>
+
+    <!-- Afficher pour ceux qui ont les deux rôles -->
+    <div v-if="isDeveloper && isManager">
+      <h2>Dashboard complet (Developer + Manager)</h2>
+      <p>Contenu accessible aux utilisateurs ayant les deux rôles.</p>
     </div>
   </div>
 </template>
+
+<script>
+import ProjetDeveloperView from "./ProjetDeveloperView.vue";
+import ListeProjects from "./ListeProjects.vue";
+
+export default {
+  components: {
+    ProjetDeveloperView,
+    ListeProjects,
+  },
+  data() {
+    return {
+      roles: [], // Liste des rôles récupérés
+    };
+  },
+  computed: {
+    isDeveloper() {
+      return this.roles.includes("Developer");
+    },
+    isManager() {
+      return this.roles.includes("Manager");
+    },
+  },
+  created() {
+    // Récupération des rôles depuis le localStorage
+    try {
+      const storedRoles = JSON.parse(localStorage.getItem("userRoles"));
+
+      if (Array.isArray(storedRoles)) {
+        this.roles = storedRoles;
+      } else {
+        console.error("Rôles non valides ou non trouvés dans le localStorage.");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des rôles :", error);
+    }
+  },
+};
+</script>
