@@ -24,33 +24,45 @@
               <label for="developer" class="col-sm-4 col-form-label">Assigner à un développeur</label>
               <div class="col-sm-8">
                 <select class="form-control" v-model="developerId">
-                    <option>Non affectée</option>
+                  <option>Non affectée</option>
                   <option v-for="developer in developers" :key="developer.id" :value="developer.id">
                     {{ developer.firstName }} {{ developer.lastName }}
                   </option>
                 </select>
               </div>
             </div>
-            <!-- Ajout du champ de date limite -->
+            <!-- Champ de date limite -->
             <div class="form-group row mb-3">
               <label for="deadline" class="col-sm-4 col-form-label">Date limite</label>
               <div class="col-sm-8">
                 <input type="date" class="form-control" id="deadline" v-model="deadline" required />
               </div>
             </div>
+
+            <!-- Gestion du statut -->
             <fieldset class="form-group row mb-3">
               <legend class="col-form-label col-sm-4 pt-0">Statut</legend>
               <div class="col-sm-8">
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" id="valid" value="Validée" v-model="statut" :disabled="isManager" />
+                  <input class="form-check-input" type="radio" id="a-faire" value="A faire" v-model="statut" />
+                  <label class="form-check-label" for="a-faire">A faire</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="complete" value="Complétée" v-model="statut"  />
+                  <label class="form-check-label" for="complete">Complétée</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="valid" value="Validée" v-model="statut" />
                   <label class="form-check-label" for="valid">Validée</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" id="non-valid" value="Non-validée" v-model="statut" :disabled="!isManager" />
+                  <input class="form-check-input" type="radio" id="non-valid" value="Non-validée" v-model="statut"  />
                   <label class="form-check-label" for="non-valid">Non validée</label>
                 </div>
               </div>
             </fieldset>
+
+            <!-- Bouton de soumission -->
             <div class="form-group row">
               <div class="col-sm-12 text-end">
                 <button type="submit" class="btn btn-primary">Mettre à jour la tâche</button>
@@ -73,7 +85,7 @@ const props = defineProps({
     default: () => ({
       titre: '',
       description: '',
-      statut: 'Non-validée',
+      statut: '',
       developerId: null,
       deadline: '', // Ajouter la deadline à la tâche
     }),

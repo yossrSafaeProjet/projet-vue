@@ -4,6 +4,7 @@
 
     <!-- Projet sélectionné -->
     <div v-if="selectedProject" :key="selectedProject.id">
+      <button @click="goToTacheComplite(selectedProject.id)">Voir les tâches complétées</button>
       <h2>{{ selectedProject.name }}</h2>
       <p>{{ selectedProject.description }}</p>
       <button @click="editProject(selectedProject)">Modifier le projet</button>
@@ -110,6 +111,13 @@ export default {
     }
   },
   methods: {
+    goToTacheComplite(idProject) {
+      console.log("Navigating to project with ID:", idProject);
+      this.$router.push({
+        name: "allTaches", 
+        params: { projetId: idProject, showAllTasks: false,showAllTasksComplets:true },
+    });
+    },
     loadProjects() {
       const storedProjects = localStorage.getItem("projects");
       if (storedProjects) {
@@ -178,7 +186,6 @@ export default {
         this.saveProjects();
         this.closeTaskModal();
       }
-       
     },
     closeTaskModal() {
       this.selectedTask = null;

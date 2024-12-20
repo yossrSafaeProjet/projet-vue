@@ -3,9 +3,10 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import AjoutCommentaireModalView from './AjoutCommentaireModalView.vue';
 
+
 // Définition des props
 const props = defineProps([ 'showAllTasks']);
-const isShowAllTasks = computed(() => props.showAllTasks === 'true');
+const isShowAllTasks = computed(() =>{props.showAllTasks === 'true'});
 
 // Variables réactives
 const taches = ref([]);
@@ -15,27 +16,39 @@ const selectedTache = ref(null);
 // Récupérer l'ID du projet depuis la route
 const route = useRoute();
 const projetId = route.params.projetId;
-
+const showAllTasksComplets = computed(() => route.params.showAllTasksComplets === 'true');
+const roles= ref([]);
 const commentaires = ref([]);
 const authenticatedUser = ref(null);
+console.log("roles",roles)
 const storedProjets = ref([]);
+
 // Récupération des données depuis localStorage lors du montage du composant
 onMounted(() => {
+  roles.value= JSON.parse(localStorage.getItem('userRoles'));
+  isManager();
+  console.log("isManager",isManager);
    storedProjets.value= JSON.parse(localStorage.getItem('projects')) || [];
   authenticatedUser.value = JSON.parse(localStorage.getItem('authenticatedUser')) || {};
 /*   console.log(props.showAllTasks) */
   if (storedProjets) {
     const project = storedProjets.value.find((p) => p.id === projetId);
     projetNom.value = project.name;
- 
-  if (!isShowAllTasks.value) {
-     taches.value = project.tasks.filter((tache) => 
-   tache.developerId === authenticatedUser.value.id
-  );
+    console.log("task",showAllTasksComplets.value);
+    if (showAllTasksComplets.value) {
+        // Si showAllTasksComplets est true, afficher uniquement les tâches complétées
+        taches.value = project.tasks.filter((tache) => tache.statut == 'Complétée');
+      } else if (!isShowAllTasks.value) {
+        // Si showAllTasks est false, afficher uniquement les tâches assignées à l'utilisateur
+        taches.value = project.tasks.filter(
+          (tache) => tache.developerId === authenticatedUser.value.id
+        );
+      } else {
+        // Sinon, afficher toutes les tâches
+        taches.value = project.tasks;
+      }
 
-  } else {
-    taches.value=project.tasks;
-  }}else{
+  }else{
     alert('Pas de tâches pour ce projet!');
   }
 
@@ -49,7 +62,10 @@ function addCommentaire(commentaire) {
   localStorage.setItem('commentaires', JSON.stringify(commentaires.value));
   alert('Commentaire ajouté avec succès.');
 }
-
+function isManager()
+{
+  roles.value.includes("Manager");
+}
 // Fonction pour naviguer vers la liste des commentaires d'une tâche
 function GoToCommentaireList() {
   window.location.href = `/allCommentaire/${selectedTache.value.id}`;
@@ -99,19 +115,34 @@ function updateStatus(tache, newStatus) {
         <div class="field">
           <div class="field-container">
           <span class="field-label">Statut :</span>
-        <select
+        <select 
+          v-if="isManager"
           id="status-select"
           class="form-select"
           v-model="tache.statut"
           @change="updateStatus(tache, tache.statut)"
           :style="{
-            backgroundColor: tache.statut === 'complété' ? '#81c784' : '#ffeb3b', 
-            borderColor: tache.statut === 'complété' ? '#388e3c' : '#00796b'
+            backgroundColor: tache.statut === 'Validée' ? '#81c784' : '#ffeb3b', 
+            borderColor: tache.statut === 'Validée' ? '#388e3c' : '#00796b'
+          }"
+        >
+        <option value="Validée">Validée</option>
+        </select>
+        <select
+          v-else="!isManager"
+          id="status-select"
+          class="form-select"
+          v-model="tache.statut"
+          @change="updateStatus(tache, tache.statut)"
+          :style="{
+            backgroundColor: tache.statut === 'Complétée' ? '#81c784' : '#ffeb3b', 
+            borderColor: tache.statut === 'Complétée' ? '#388e3c' : '#00796b'
           }"
         >
           <option value="en cours">En cours</option>
-          <option value="complété">Complété</option>
+          <option value="Complétée">Complétée</option>
         </select>
+        
       </div>
     </div>
   </div>

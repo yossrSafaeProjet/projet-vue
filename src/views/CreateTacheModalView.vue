@@ -163,11 +163,7 @@ const isManager = computed(() => roles.includes("Manager"));
 
 // Définir le statut automatiquement selon le rôle
 onMounted(() => {
-  if (isManager.value) {
-    statut.value = "Validée"; // Pour les managers, le statut est validé par défaut
-  } else {
-    statut.value = "Non-validée"; // Pour les développeurs, le statut est non validé par défaut
-  }
+    statut.value = " Non validée"; // Pour les managers, le statut est validé par défaut
 });
 
 // Lors de la création de la tâche

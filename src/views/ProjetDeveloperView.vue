@@ -55,12 +55,12 @@ function addTaskToProject(task) {
   }
 }
 function showAll(projetId) {
-  router.push({ name: 'allTaches', params: { projetId,showAllTasks: true } });
+  router.push({ name: 'allTaches', params: { projetId,showAllTasks: true,showAllTasksComplets:false } });
 }
 
 // Fonction pour afficher uniquement les tâches affectées à l'utilisateur
 function showMyTasks(projetId) {
-  router.push({ name: 'allTaches', params: { projetId,showAllTasks: false } });
+  router.push({ name: 'allTaches', params: { projetId,showAllTasks: false,showAllTasksComplets: false } });
 }
 </script>
 

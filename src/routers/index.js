@@ -50,7 +50,7 @@ const routes = [
     component: ListeProjects,
   },
   {
-    path: "/allTaches/:projetId/:showAllTasks",
+    path: "/allTaches/:projetId/:showAllTasks/:showAllTasksComplets",
     name: "allTaches",
     component: ListeAllTachesView,
     props: true,

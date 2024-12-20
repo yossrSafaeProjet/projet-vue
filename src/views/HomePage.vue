@@ -12,7 +12,7 @@
     <div v-if="isManager && !isDeveloper">
       <h2>Gestion des projets pour Manager</h2>
       <h6>Gestion spécifique au rôle Manager</h6>
-      <button @click="avancementProjet()"> </button>
+      <button @click="AvancementProjet">Avancement Projet</button>
       <ListeProjects :projects="projects" />
 
     </div>
@@ -30,6 +30,7 @@
 <script>
 import ProjetDeveloperView from "./ProjetDeveloperView.vue";
 import ListeProjects from "./ListeProjects.vue";
+import ProjectOverview from "./ProjectOverview.vue";
 
 export default {
   components: {
@@ -49,6 +50,9 @@ export default {
     },
     isManager() {
       return this.roles.includes("Manager");
+    },
+    AvancementProjet() {
+      this.$router.push({name:"ProjectOverview"})
     },
   },
   created() {

@@ -19,7 +19,7 @@
     </div>
 
     <!-- Liste des projets attribués au manager -->
-    <div v-for="project in filteredProjects" :key="project.id">
+    <div v-for="project in this.projects" :key="project.id">
       <h2>{{ project.name }}</h2>
       <p>{{ project.description }}</p>
       <button @click="editProject(project)">Modifier</button>
@@ -59,7 +59,6 @@
     />
   </div>
 </template>
-
 <script>
 import { ref } from 'vue';
 import CreateTacheModalView from './CreateTacheModalView.vue';
@@ -94,7 +93,7 @@ export default {
       return this.projects.filter(project => 
         Array.isArray(project.managers) &&
         project.managers.some(managerId => this.managerIds.includes(managerId))
-        );
+      );
     },
   },
   methods: {
@@ -120,9 +119,11 @@ export default {
           tasks: [],
           managers: this.managerIds, // Assignation de tous les managers
         };
-        this.projects.push(newProject);
+        this.projects.push(newProject); // Mise à jour du tableau de projets
       }
-      this.saveProjects();
+
+      this.saveProjects(); // Sauvegarde dans localStorage
+      this.loadProjects(); // Recharge les projets pour forcer un rafraîchissement de la vue
       this.resetForm();
     },
     editProject(project) {
@@ -135,7 +136,7 @@ export default {
       this.saveProjects();
     },
     saveProjects() {
-      localStorage.setItem('projects', JSON.stringify(this.projects));
+      localStorage.setItem('projects', JSON.stringify(this.projects)); // Sauvegarde dans localStorage
     },
     loadProjects() {
       const storedProjects = localStorage.getItem('projects');
