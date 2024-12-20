@@ -30,7 +30,7 @@ const routes = [
     component: HomePage,
   },
   {
-    path: "/ManageProjects/:managerId",
+    path: "/ManageProjects",
     name: "ManageProjects",
     component: ManageProjects,
   },

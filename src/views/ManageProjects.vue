@@ -97,7 +97,7 @@ export default {
   },
   mounted() {
      this.authenticatedUser = JSON.parse(localStorage.getItem('authenticatedUser'));
-     this.projects = JSON.parse(localStorage.getItem('projects'));  
+     this.projects = JSON.parse(localStorage.getItem('projects'))||[];  
 
     // Charger les projets depuis localStorage lors du montage du composant
 
@@ -169,6 +169,7 @@ export default {
     saveProjects() {
 
       localStorage.setItem('projects', JSON.stringify(this.projects));
+      window.location.reload();
     },
 
     // Charger les projets depuis le localStorage
