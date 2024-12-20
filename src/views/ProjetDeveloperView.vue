@@ -26,12 +26,6 @@ onMounted(() => {
     projetsAvecTaches.value = storedProjets.filter((projet) => {
       return projet.tasks && projet.tasks.some((tache) => tache.developerId === authenticatedUser.value.id);
     });
-
-
-    // Si aucun projet n'est trouvé, alerter
-    if (projetsAvecTaches.value.length === 0) {
-      alert("Oops, vous n'avez pas de tâches associées à un projet.");
-    }
   } catch (error) {
     console.error("Erreur lors de la récupération des données :", error);
     alert("Une erreur est survenue.");
