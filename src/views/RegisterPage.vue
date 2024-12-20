@@ -111,7 +111,7 @@ export default {
 
         // Enregistre les utilisateurs dans le localStorage
         localStorage.setItem("users", JSON.stringify(users));
-        localStorage.setItem("lastUserId", newUserId);  // Sauvegarde du dernier ID utilisateur utilisé
+        localStorage.setItem("lastUserId", newUserId);
 
         alert("Inscription réussie !");
         // Redirige vers la page de connexion

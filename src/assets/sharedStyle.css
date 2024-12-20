@@ -1,0 +1,63 @@
+.page-title {
+    font-size: 2rem; /* Taille du texte */
+    font-weight: bold; /* Mettre le titre en gras */
+    color: #333; /* Couleur du texte */
+    text-align: center; /* Centrer le texte */
+    margin-bottom: 2rem; /* Ajouter un espace en dessous du titre */
+    text-transform: uppercase; /* Mettre le titre en majuscules */
+    letter-spacing: 2px; /* Espacement entre les lettres */
+    background-color: #007bff; /* Couleur de fond */
+    padding: 1rem; /* Espacement intérieur */
+    border-radius: 8px; /* Arrondir les coins */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère autour du titre */
+  }
+  
+  .custom-btn {
+    width: 100%;
+    margin-top: 10px; 
+    font-size: 1rem;
+    padding: 10px 0;
+  }
+  
+  /* Style des cartes */
+  .card {
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style au survol des cartes */
+  .card:hover {
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Espacement entre les cartes */
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+  
+  .task-card {
+    flex: 1 1 calc(25% - 1rem);
+    max-width: calc(25% - 1rem);
+  }
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .field {
+    display: block;
+    justify-content: start;
+    align-items: center;
+  }
+  
+  .field-label {
+    font-weight: bold;
+    color:red;
+  }
+  .field-value {
+    font-style: italic;
+    color: blue;
+  }
