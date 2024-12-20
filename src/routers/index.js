@@ -30,12 +30,12 @@ const routes = [
     component: HomePage,
   },
   {
-    path: "/ManageProjects",
+    path: "/ManageProjects/:managerId",
     name: "ManageProjects",
     component: ManageProjects,
   },
   {
-    path: "/projetDeveloper/:developperId/:projetId",
+    path: "/projetDeveloper/:developperId",
     name: "projetDeveloper",
     component: ProjetDeveloperView,
   },

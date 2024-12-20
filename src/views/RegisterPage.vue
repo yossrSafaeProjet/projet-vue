@@ -1,9 +1,10 @@
 <template>
-  <div class="register-container">
+  <div class="container mt-5 register-container">
     <h1>Inscription</h1>
     <form @submit.prevent="handleRegister">
       <!-- Nouveau champ Nom -->
-      <label for="first-name">Prénom</label>
+      <div class="mb-3">
+      <label for="first-name" class="form-label">Prénom</label>
       <input
         type="text"
         id="first-name"
@@ -11,9 +12,10 @@
         placeholder="Entrez votre prénom"
         required
       />
-
+</div>
       <!-- Nouveau champ Prénom -->
-      <label for="last-name">Nom</label>
+       <div class="mb-3">
+      <label for="last-name" class="form-label">Nom</label>
       <input
         type="text"
         id="last-name"
@@ -21,11 +23,13 @@
         placeholder="Entrez votre nom"
         required
       />
-
-      <label for="email">Adresse email</label>
+</div>
+<div class="mb-3">
+      <label for="email" class="form-label">Adresse email</label>
       <input type="email" id="email" v-model="email" placeholder="Entrez votre adresse email" required/>
-
-      <label for="password">Mot de passe</label>
+</div>
+<div class="mb-3">
+      <label for="password" class="form-label">Mot de passe</label>
       <input
         type="password"
         id="password"
@@ -33,8 +37,9 @@
         placeholder="Entrez votre mot de passe"
         required
       />
-
-      <label for="confirm-password">Confirmez votre mot de passe</label>
+</div>
+<div class="mb-3">
+      <label for="confirm-password" class="form-label">Confirmez votre mot de passe</label>
       <input
         type="password"
         id="confirm-password"
@@ -42,15 +47,19 @@
         placeholder="Confirmez votre mot de passe"
         required
       />
-
-      <label for="roles">Choisissez vos rôles</label>
+</div>
+<div class="mb-3">
+      <label for="roles" class="form-label">Choisissez vos rôles</label>
+      <div class="form-check">
       <div id="roles">
-        <label>
-          <input
+        <input
             type="checkbox"
             value="Developer"
             v-model="roles"
+          
           />
+        <label   class="form-check-label">
+        
           Développeur
         </label>
         <label>
@@ -58,14 +67,16 @@
             type="checkbox"
             value="Manager"
             v-model="roles"
+            class="form-check-label"
           />
           Manager
         </label>
       </div>
-
-      <button type="submit">S'inscrire</button>
+      </div>
+</div>
+      <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
     </form>
-    <p>
+    <p class="text-center mt-3">
       Déjà inscrit ? <a href="#" @click="goToLogin">Connectez-vous ici</a>
     </p>
   </div>
@@ -128,3 +139,27 @@ export default {
   },
 };
 </script>
+<style scoped>
+.register-container {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.register-container h1 {
+  color: #007bff;
+}
+
+.register-container a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.register-container a:hover {
+  text-decoration: underline;
+}
+</style>
