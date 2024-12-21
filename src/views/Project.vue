@@ -5,8 +5,8 @@
     <!-- Projet sélectionné -->
     <div v-if="selectedProject" :key="selectedProject.id">
       <button @click="goToTacheComplite(selectedProject.id)">Voir les tâches complétées</button>
-      <h2>{{ selectedProject.name }}</h2>
-      <p>{{ selectedProject.description }}</p>
+      <h2>Projet :{{ selectedProject.name }}</h2>
+      <p>Description :{{ selectedProject.description }}</p>
       <button @click="editProject(selectedProject)">Modifier le projet</button>
       <button @click="deleteProject(selectedProject.id)">Supprimer le projet</button>
       <button
@@ -209,8 +209,9 @@ h1 {
 
 /* Informations du projet */
 h2 {
-  color: #34495e;
+  color: #1e3a8a; /* Bleu foncé */
   margin-bottom: 10px;
+  font-weight: bold; /* Texte en gras */
 }
 
 p {
@@ -306,13 +307,6 @@ button[type="button"]:hover {
   background-color: #c0392b;
 }
 
-/* Modal styles (optionnel pour amélioration) */
-.modal-content {
-  padding: 20px;
-  border-radius: 5px;
-  border: none;
-  background-color: #ffffff;
-}
 
 .modal-header,
 .modal-footer {

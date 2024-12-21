@@ -85,8 +85,8 @@ export default {
 
     // Méthode pour retourner les tâches en cours (non complétées ni validées)
         ongoingTasks(project) {
-        console.log("okkk", project.tasks.filter(task => task.statut !== "complétée" && task.statut !== "Validée"));
-        return project.tasks.filter(task => task.statut !== "complétée" && task.statut !== "Validée");
+        console.log("okkk", project.tasks.filter(task => task.statut !== "Complétée" && task.statut !== "Validée"));
+        return project.tasks.filter(task => task.statut !== "Complétée" && task.statut !== "Validée");
         },
 
 
@@ -96,7 +96,7 @@ export default {
         
         // Comptabiliser les tâches complétées ou validées
         const completedTasks = project.tasks.filter(task => 
-            task.statut === "complétée" || task.statut === "Validée"
+            task.statut === "Complétée" || task.statut === "Validée"
         ).length;
 
         // Calcul du pourcentage de progression
@@ -108,7 +108,7 @@ export default {
       const now = new Date();
       return project.tasks.some(task => {
         const taskDeadline = new Date(task.deadline);
-        return task.statut !== "complétée" && task.statut !== "Validée" && taskDeadline < now;
+        return task.statut !== "Complétée" && task.statut !== "Validée" && taskDeadline < now;
       });
     },
 
@@ -116,7 +116,7 @@ export default {
       const now = new Date();
       return project.tasks.some(task => {
         const taskDeadline = new Date(task.deadline);
-        return (taskDeadline - now) / (1000 * 60 * 60 * 24) < 3 && task.statut !== "complétée"  && task.statut !== "Validée";
+        return (taskDeadline - now) / (1000 * 60 * 60 * 24) < 3 && task.statut !== "Complétée"  && task.statut !== "Validée";
       });
     },
 

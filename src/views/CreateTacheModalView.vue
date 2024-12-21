@@ -185,6 +185,9 @@ function creerTache() {
   console.log("Nouvelle tâche créée:", nouvelleTache); // Vérifiez la tâche créée
   emit("task-created", nouvelleTache);
   emit("close-modal");
+  const modalElement = document.getElementById("createTacheModal");
+  const modalInstance = bootstrap.Modal.getInstance(modalElement);
+  modalInstance.hide(); // Fermer le modal
 }
 function closeModal() {
   emit('close-modal');

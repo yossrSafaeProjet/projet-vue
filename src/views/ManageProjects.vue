@@ -71,7 +71,7 @@
     />
 
   </div>
-  <router-link :to="{ name: 'ListeProjects' }" class="btn btn-link mt-3">Retour</router-link>
+  <!--<router-link :to="{ name: 'ListeProjects' }" class="btn btn-link mt-3">Retour</router-link>-->
 </div>
 
 </template>
@@ -89,6 +89,7 @@ export default {
       showProjectForm: false,
       editingProjectId: null, // ID du projet en cours de modification
       selectedProject: null,
+      managerIds:[],
       managerId: null,
       authenticatedUser:null,
       projectsManager:[] // Identifiant du manager
@@ -97,11 +98,12 @@ export default {
   mounted() {
      this.authenticatedUser = JSON.parse(localStorage.getItem('authenticatedUser'));
      this.projects = JSON.parse(localStorage.getItem('projects'))||[];  
+     this.recupererManagerIds();
+    console.log("lkjh",this.managerIds);
     // Charger les projets depuis localStorage lors du montage du composant
 
     this.loadProjects();
     // Récupérer l'identifiant du manager depuis le localStorage
-    this.recupererManagerId();
   },
   computed: {
     // Filtrer les projets pour n'afficher que ceux attribués au manager
@@ -116,19 +118,18 @@ export default {
     },
   },
   methods: {
-    recupererManagerId() {
-      // Récupérer l'ID du manager depuis localStorage
-      const managerId = localStorage.getItem('managerId');
-      
-      if (managerId) {
-        this.managerId = managerId;  // Assigner l'ID du manager à la variable
-        console.log('ID du manager récupéré:', this.managerId);
-      } else {
-        console.log('Aucun ID de manager trouvé.');
-      }
-    },
+     recupererManagerIds() {
+  const storedManagerIds = localStorage.getItem('managerIds');
+  if (storedManagerIds) {
+    this.managerIds = JSON.parse(storedManagerIds);
+  } else {
+    console.warn('Aucun ID de managers trouvé. Initialisation avec un tableau vide.');
+    this.managerIds = []; // Initialisation avec un tableau vide si aucune donnée n'est trouvée
+  }
+},
     // Sauvegarder un projet (création ou modification)
     saveProject() {
+      const managerIds = localStorage.getItem('managerIds');
       if (this.editingProjectId) {
         // Modification existante
         const project = this.projects.find(p => p.id === this.editingProjectId);
@@ -137,15 +138,16 @@ export default {
           project.description = this.newProject.description;
         }
       } else {
-        // Création d'un nouveau projet
-        
         const newProject = {
           ...this.newProject,
           id: crypto.randomUUID(), 
           tasks: [],
+          managerIds: [...this.managerIds],
           managerId: this.authenticatedUser.id, 
         };  
-
+        if (!newProject.managerIds.includes(this.authenticatedUser.id)) {
+            newProject.managerIds.push(this.authenticatedUser.id);
+        }
         this.projects.push(newProject);
 
       }
@@ -154,6 +156,7 @@ export default {
       this.saveProjects();
 
       this.resetForm();
+       this.managerIds = [];
     },
 
     // Modifier un projet
@@ -184,6 +187,7 @@ export default {
       // Ajouter les projets actuels du manager
       const updatedProjects = [...filteredProjects, ...this.projects];
       localStorage.setItem('projects', JSON.stringify(updatedProjects));
+      
     }
   },
 

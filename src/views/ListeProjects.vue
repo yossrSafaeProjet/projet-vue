@@ -48,6 +48,7 @@ export default {
     const storedProjects = localStorage.getItem('projects');
         // Récupérer les rôles de l'utilisateur depuis localStorage
     const currentUser = JSON.parse(localStorage.getItem("authenticatedUser"));
+    const roles=JSON.parse(localStorage.getItem("userRoles"));
     if (storedProjects) {
       this.projects = JSON.parse(storedProjects);
     } else {
@@ -56,7 +57,7 @@ export default {
 
 
     if (currentUser) {
-      this.userRoles = currentUser.roles || [];
+      this.userRoles = roles || [];
     }
 
     // Récupérer la liste des utilisateurs (à adapter selon votre logique de données)
@@ -74,8 +75,9 @@ export default {
     },
     goToDashboard(projectId) {
       // Vérifiez si l'utilisateur a le rôle de Manager
-      console.log(this.userRoles[0]);
+      console.log("cou",this.userRoles[0]);
       if (this.userRoles[0] == "Manager") {
+        console.log("mm",);
         this.addManagerToProject(projectId);
       }
 
@@ -114,6 +116,7 @@ export default {
 
           // Mettre à jour la liste des managers globaux dans localStorage
           const managerIds = JSON.parse(localStorage.getItem("managerIds")) || [];
+          console.log("managers",managerIds);
           if (!managerIds.includes(currentUser.id)) {
             managerIds.push(currentUser.id);
           }
